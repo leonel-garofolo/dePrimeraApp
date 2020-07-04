@@ -12,7 +12,8 @@ class LigasServices extends API{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList();
+        List<LigaDTO> list = (json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList();
+        return list;
       } on Exception {
         return null;
       }

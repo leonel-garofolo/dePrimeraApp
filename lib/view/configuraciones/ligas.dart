@@ -8,42 +8,53 @@ class LigasForm extends StatefulWidget {
 
   @override
   _LigasFormState createState() => _LigasFormState();
-
 }
 
 final List<String> entries = <String>['A', 'B', 'C'];
 
 class _LigasFormState extends State<LigasForm> {
-  LigasServices ligasServices;
-  List<LigaDTO> ligas;
 
   @override
   void initState() {
     super.initState();
-    ligasServices = new LigasServices();
+  }
+
+  Future<List<LigaDTO>> getLigas() async{
+    final LigasServices ligasServices= new LigasServices();
+    List<LigaDTO> ligas = await ligasServices.getAll();
+    return ligas;
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<List<LigaDTO>>(
+       future: getLigas(),
+       builder: (context, snapshot) {
 
+      Widget list = Container(
+        child: Text("cargando"),
+      );
 
-    Widget list = ListView.separated(
-      padding: const EdgeInsets.all(8),
-      itemCount: entries.length,
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: 50,
-          child: Center(child: Text('Entry ${entries[index]}')),
+      if(snapshot.data != null && snapshot.data.isNotEmpty){
+        list= ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: snapshot.data.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 50,
+              child: Center(child: Text('Entry ${snapshot.data[index].nombre}')),
+            );
+          },
+          separatorBuilder: (BuildContext context, int index) => const Divider(),
         );
-      },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
-    );
+      }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ligas'),
-      ),
-      body: list,
-    );
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Ligas'),
+        ),
+        body: list,
+      );
+    });
   }
 }
