@@ -1,3 +1,4 @@
+import 'package:ag/view/configuration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -32,7 +33,9 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.settings),
             title: Text('Configuraciones'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              openConfig(context)
+            },
           ),
           ListTile(
             leading: Icon(Icons.border_color),
@@ -46,6 +49,13 @@ class NavDrawer extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  openConfig(BuildContext context){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Configuration()),
     );
   }
 }
