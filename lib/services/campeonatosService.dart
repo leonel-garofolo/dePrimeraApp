@@ -5,11 +5,11 @@ import 'package:ag/services/http/api.dart';
 import 'package:ag/services/model/dtos.dart';
 
 const String endPoint = "/campeonatos";
-class CampeonatoServices{
+class CampeonatoServices extends API{
 
   Future<List<CampeonatoDTO>> getAll() async{
     try{
-      final response = await Get(endPoint);
+      final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return (json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList();
@@ -23,7 +23,7 @@ class CampeonatoServices{
 
   Future<CampeonatoDTO> get(int id) async{
     try{
-      final response = await Get(endPoint + "/" + id.toString());
+      final response = await super.getHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return  CampeonatoDTO.fromJson(json.decode(response.body));
@@ -35,9 +35,9 @@ class CampeonatoServices{
     }
   }
 
-  Future<String> save(CampeonatoDTO campeonato) async{
+  Future<String> save(CampeonatoDTO dto) async{
     try{
-      final response = await Post(endPoint, campeonato);
+      final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return response.body;
@@ -51,7 +51,7 @@ class CampeonatoServices{
 
   Future<String> delete(int id) async{
     try{
-      final response = await Delete(endPoint + "/" + id.toString());
+      final response = await super.deleteHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return response.body;

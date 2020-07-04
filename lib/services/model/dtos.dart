@@ -202,7 +202,7 @@ class PartidoDTO {
   }
 }
 
-class PersonasDTO {
+class PersonaDTO {
   int idPersona;
 
   String apellidoNombre;
@@ -215,7 +215,7 @@ class PersonasDTO {
   int idTipoDoc;
   int nroDoc;
 
-  PersonasDTO(
+  PersonaDTO(
       {this.idPersona,
         this.apellidoNombre,
         this.domicilio,
@@ -227,7 +227,7 @@ class PersonasDTO {
         this.idTipoDoc,
         this.nroDoc});
 
-  PersonasDTO.fromJson(Map<String, dynamic> json) {
+  PersonaDTO.fromJson(Map<String, dynamic> json) {
     apellidoNombre = json['apellido_nombre'];
     domicilio = json['domicilio'];
     edad = json['edad'];
