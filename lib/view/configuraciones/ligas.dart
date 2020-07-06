@@ -8,10 +8,10 @@ class LigasActivity extends StatefulWidget {
   LigasActivity({Key key}) : super(key: key);
 
   @override
-  _LigasActivityState createState() => _LigasActivityState();
+  LigasActivityState createState() => LigasActivityState();
 }
 
-class _LigasActivityState extends State<LigasActivity> {
+class LigasActivityState extends State<LigasActivity> {
   final LigasServices ligasServices= new LigasServices();
   @override
   void initState() {
@@ -84,6 +84,7 @@ class LigasForm extends StatefulWidget {
 }
 
 class LigasFormState extends State<LigasForm>{
+  final LigasServices ligasServices = new LigasServices();
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
@@ -96,12 +97,24 @@ class LigasFormState extends State<LigasForm>{
 
   @override
   Widget build(BuildContext context) {
+    if(this.widget.ligaDTO != null){
+      nombre.text = this.widget.ligaDTO.nombre;
+      cuit.text = this.widget.ligaDTO.cuit;
+      domicilio.text = this.widget.ligaDTO.domicilio;
+      nombreContacto.text = this.widget.ligaDTO.nombreContacto;
+      telefonoContacto.text = this.widget.ligaDTO.telefonoContacto;
+      telefono.text = this.widget.ligaDTO.telefono;
+      mailContacto.text = this.widget.ligaDTO.mailContacto;
+    }
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.ligaDTO != null? this.widget.ligaDTO.nombre : "Nueva Liga"}"),
       ),
-      body: Form(
+      body: SingleChildScrollView(
+      padding: EdgeInsets.all(20.0),
+      child:Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,16 +147,38 @@ class LigasFormState extends State<LigasForm>{
               label: "Telefono Contacto",
               controller: telefonoContacto,
             ),
-            RaisedButton(
-              onPressed: () {
-                print(nombre.value.text);
-              },
-              child: const Text('Enabled Button', style: TextStyle(fontSize: 20)),
-            ),
+            SizedBox(
+              width: double.infinity,
+              child: RaisedButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                onPressed: () {
+                  save();
+                },
+                child: const Text('Guardar',
+                    style: TextStyle(fontSize: 20)),
+              ),
+            )
+
           ],
         ),
-      ),
+      ),),
     );
   }
 
+  save() async{
+    final LigaDTO ligaDTO = new LigaDTO();
+    if(this.widget.ligaDTO != null){
+      ligaDTO.idLiga = this.widget.ligaDTO.idLiga;
+    }
+    ligaDTO.nombre = nombre.text;
+    ligaDTO.cuit = cuit.text;
+    ligaDTO.domicilio = domicilio.text;
+    ligaDTO.nombreContacto = nombreContacto.text;
+    ligaDTO.mailContacto = mailContacto.text;
+    ligaDTO.telefono = telefono.text;
+    ligaDTO.telefonoContacto = telefonoContacto.text;
+    print(await ligasServices.save(ligaDTO));
+    Navigator.pop(context);
+  }
 }

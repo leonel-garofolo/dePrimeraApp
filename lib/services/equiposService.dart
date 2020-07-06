@@ -13,10 +13,12 @@ class EquiposServices extends API{
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return (json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList();
-      } on Exception {
+      } on Exception catch(e){
+        print(e);
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

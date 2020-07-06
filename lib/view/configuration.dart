@@ -98,7 +98,7 @@ class _ConfigurationState extends State<Configuration> {
         w = LigasActivity();
         break;
       case T_EQUIPOS:
-        w = EquiposForm();
+        w = EquiposActivity();
         break;
       case T_CAMPEONATOS:
         w = CampeonatosForm();

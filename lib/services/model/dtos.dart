@@ -107,14 +107,15 @@ class CampeonatoDTO {
 }
 
 class EquipoDTO {
-  int idLiga;
-  bool habilitado;
   int idEquipo;
+  int idLiga;
+  LigaDTO ligaDTO;
+  bool habilitado;
   String nombre;
   Null foto;
 
   EquipoDTO(
-      {this.foto, this.habilitado, this.idEquipo, this.idLiga, this.nombre});
+      {this.idEquipo, this.idLiga, this.foto, this.habilitado, this.nombre});
 
   EquipoDTO.fromJson(Map<String, dynamic> json) {
     foto = json['foto'];
