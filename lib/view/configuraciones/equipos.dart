@@ -86,7 +86,7 @@ class EquiposActivityState extends State<EquiposActivity> {
     print(equipoDTO.nombre);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EquiposForm(equipoDTO: equipoDTO,)),
+      MaterialPageRoute(builder: (context) => EquiposForm(ligasDTO: ligas, equipoDTO: equipoDTO,)),
     );
   }
 
@@ -99,8 +99,9 @@ class EquiposActivityState extends State<EquiposActivity> {
 }
 
 class EquiposForm extends StatefulWidget {
-  EquiposForm({Key key, this.equipoDTO}) : super(key: key);
+  EquiposForm({Key key, this.ligasDTO, this.equipoDTO}) : super(key: key);
 
+  final List<LigaDTO> ligasDTO;
   final EquipoDTO equipoDTO;
   @override
   EquiposFormState createState() => EquiposFormState();
@@ -119,7 +120,7 @@ class EquiposFormState extends State<EquiposForm>{
   Widget build(BuildContext context) {
     if(this.widget.equipoDTO != null){
       nombre.text = this.widget.equipoDTO.nombre;
-     // idLiga.text = this.widget.equipoDTO.idLiga;
+      idLiga.text = this.widget.equipoDTO.ligaDTO.idLiga.toString();
       //habilitado.text = this.widget.equipoDTO.habilitado;
       //foto.text = this.widget.equipoDTO.foto;
     }
