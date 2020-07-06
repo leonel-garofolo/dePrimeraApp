@@ -1,7 +1,8 @@
 import 'package:ag/services/equiposService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/component/field.dart';
+import 'package:ag/view/component/fieldListView.dart';
+import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -141,8 +142,9 @@ class EquiposFormState extends State<EquiposForm>{
                 label: "Nombre",
                 controller: nombre,
               ),
-              FieldText(
+              FieldListView(
                 label: "Id Liga",
+                title: "Selecciona una Liga",
                 controller: idLiga,
               ),
               SizedBox(

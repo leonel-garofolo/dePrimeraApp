@@ -1,6 +1,6 @@
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/component/field.dart';
+import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
