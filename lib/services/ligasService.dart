@@ -14,10 +14,12 @@ class LigasServices extends API{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         List<LigaDTO> list = (json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList();
         return list;
-      } on Exception {
+      } on Exception catch(e){
+        print(e);
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

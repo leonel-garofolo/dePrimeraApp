@@ -95,7 +95,7 @@ class _ConfigurationState extends State<Configuration> {
     Widget w;
     switch(choice.type){
       case T_LIGAS:
-        w = LigasForm();
+        w = LigasActivity();
         break;
       case T_EQUIPOS:
         w = EquiposForm();

@@ -6,13 +6,14 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:ag/enviroments/desa.dart';
+import 'package:ag/enviroments/test.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Counter value should be incremented', () async {
-    new Dev();
+    new Test();
     LigasServices ligasServices = new LigasServices();
     List<LigaDTO> ligas = await ligasServices.getAll();
     print(ligas.toString());
