@@ -1,6 +1,7 @@
 import 'package:ag/services/equiposService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
+import 'package:ag/view/component/comboView.dart';
 import 'package:ag/view/component/fieldListView.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
@@ -114,16 +115,28 @@ class EquiposFormState extends State<EquiposForm>{
 
   final idLiga = TextEditingController();
   final nombre = TextEditingController();
-  final habilitado = TextEditingController();
+  bool habilitado = false;
   final foto = TextEditingController();
+
+  LigaDTO ligaValue = new LigaDTO();
 
   @override
   Widget build(BuildContext context) {
     if(this.widget.equipoDTO != null){
       nombre.text = this.widget.equipoDTO.nombre;
       idLiga.text = this.widget.equipoDTO.ligaDTO.idLiga.toString();
-      //habilitado.text = this.widget.equipoDTO.habilitado;
+      habilitado = this.widget.equipoDTO.habilitado;
       //foto.text = this.widget.equipoDTO.foto;
+    }
+
+    final List<DropdownMenuItem<LigaDTO>> ligasList = new List<DropdownMenuItem<LigaDTO>>();
+    if(this.widget.equipoDTO.ligaDTO != null){
+        for(LigaDTO ligaDTO in this.widget.ligasDTO){
+          ligasList.add(new DropdownMenuItem(
+              value: ligaDTO,
+              child: new Text(ligaDTO.nombre)
+          ));
+        }
     }
 
     return Scaffold(
@@ -142,10 +155,21 @@ class EquiposFormState extends State<EquiposForm>{
                 label: "Nombre",
                 controller: nombre,
               ),
-              FieldListView(
-                label: "Id Liga",
-                title: "Selecciona una Liga",
-                controller: idLiga,
+              ComboView<LigaDTO>(
+                label: "Seleccione la Liga",
+                itemValue: ligaValue,
+                itemList: ligasList,
+                onChange: onChangeLiga,
+              ),
+              CheckboxListTile(
+                title: Text("title text"),
+                value: habilitado,
+                onChanged: (newValue) {
+                  setState(() {
+                    habilitado = newValue;
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
               ),
               SizedBox(
                 width: double.infinity,
@@ -158,12 +182,17 @@ class EquiposFormState extends State<EquiposForm>{
                   child: const Text('Guardar',
                       style: TextStyle(fontSize: 20)),
                 ),
-              )
-
+              ),
             ],
           ),
         ),),
     );
+  }
+
+  void onChangeLiga(LigaDTO newLiga){
+    setState(() {
+      ligaValue = newLiga;
+    });
   }
 
   save() async{

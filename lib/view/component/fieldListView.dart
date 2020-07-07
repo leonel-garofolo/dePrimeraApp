@@ -10,7 +10,7 @@ class ItemList{
 
 }
 class FieldListView extends StatelessWidget{
-  FieldListView({this.label, this.title, , this.controller});
+  FieldListView({this.label, this.title, this.itemList, this.controller});
 
   final String label;
   final String title;
@@ -19,12 +19,14 @@ class FieldListView extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-        color: Colors.blue,
-        textColor: Colors.white,
-        child: const Text('Liga',
-            style: TextStyle(fontSize: 20)),
-        onPressed: (){ openDialog(context);});
+    return Container(
+      child: TextField(
+        decoration: InputDecoration(
+            labelText: 'Enter your username'
+        ),
+        
+      ),
+    );
   }
 
   openDialog(final BuildContext context){
