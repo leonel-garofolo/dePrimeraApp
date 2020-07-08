@@ -1,8 +1,9 @@
 import 'package:ag/services/campeonatosService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/component/checkBoxView.dart';
-import 'package:ag/view/component/comboView.dart';
+import 'package:ag/view/component/fieldCheckBox.dart';
+import 'package:ag/view/component/fieldComboBox.dart';
+import 'package:ag/view/component/fieldDatePicker.dart';
 import 'package:ag/view/component/fieldListView.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
@@ -111,8 +112,8 @@ class CampeonatosFormState extends State<CampeonatosForm>{
 
   final descripcion = TextEditingController();
   LigaDTO ligaValue;
-  bool habilitado = false;
-  final foto = TextEditingController();
+  DateTime fechaInicio;
+  DateTime fechaFin;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +121,6 @@ class CampeonatosFormState extends State<CampeonatosForm>{
       descripcion.text = this.widget.campeonatoDTO.descripcion;
       if(ligaValue == null)
         ligaValue = this.widget.campeonatoDTO.ligaDTO;
-      //foto.text = this.widget.campeonatoDTO.foto;
     }
 
     return Scaffold(
@@ -136,7 +136,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               FieldText(
-                label: "Nombre",
+                label: "Descripcion",
                 controller: descripcion,
               ),
               FieldComboBox<LigaDTO>(
@@ -145,14 +145,11 @@ class CampeonatosFormState extends State<CampeonatosForm>{
                 itemList: widget.ligasDTO,
                 onChange: onChangeLiga,
               ),
-              FieldCheckbox(
-                label: "Habilitado",
-                value: habilitado,
-                valueChanged: (newValue) {
-                  setState(() {
-                    habilitado = newValue;
-                  });
-                },
+              FieldDatePicker(
+                label: "Fecha Desde",
+              ),
+              FieldDatePicker(
+                label: "Fecha Hasta",
               ),
               SizedBox(
                 width: double.infinity,

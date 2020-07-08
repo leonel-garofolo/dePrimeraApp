@@ -1,8 +1,8 @@
 import 'package:ag/services/equiposService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/component/checkBoxView.dart';
-import 'package:ag/view/component/comboView.dart';
+import 'package:ag/view/component/fieldCheckBox.dart';
+import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldListView.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
