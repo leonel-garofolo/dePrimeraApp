@@ -1,3 +1,7 @@
+class ItemValue{
+  String toString();
+}
+
 class UserApp{
   final String userName;
   final String rol;
@@ -24,7 +28,7 @@ class UserApp{
   };
 }
 
-class LigaDTO {
+class LigaDTO extends ItemValue{
   int idLiga;
   String cuit;
   String domicilio;
@@ -53,6 +57,8 @@ class LigaDTO {
     nombreContacto = json['nombreContacto'];
     telefono = json['telefono'];
     telefonoContacto = json['telefonoContacto'];
+
+
   }
 
   Map<String, dynamic> toJson() {
@@ -66,6 +72,11 @@ class LigaDTO {
     data['telefono'] = this.telefono;
     data['telefonoContacto'] = this.telefonoContacto;
     return data;
+  }
+
+  @override
+  String toString() {
+    return nombre;
   }
 }
 

@@ -113,30 +113,16 @@ class EquiposFormState extends State<EquiposForm>{
   final EquiposServices equiposServices = new EquiposServices();
   final _formKey = GlobalKey<FormState>();
 
-  final idLiga = TextEditingController();
   final nombre = TextEditingController();
   bool habilitado = false;
   final foto = TextEditingController();
-
-  LigaDTO ligaValue = new LigaDTO();
 
   @override
   Widget build(BuildContext context) {
     if(this.widget.equipoDTO != null){
       nombre.text = this.widget.equipoDTO.nombre;
-      idLiga.text = this.widget.equipoDTO.ligaDTO.idLiga.toString();
       habilitado = this.widget.equipoDTO.habilitado;
       //foto.text = this.widget.equipoDTO.foto;
-    }
-
-    final List<DropdownMenuItem<LigaDTO>> ligasList = new List<DropdownMenuItem<LigaDTO>>();
-    if(this.widget.equipoDTO.ligaDTO != null){
-        for(LigaDTO ligaDTO in this.widget.ligasDTO){
-          ligasList.add(new DropdownMenuItem(
-              value: ligaDTO,
-              child: new Text(ligaDTO.nombre)
-          ));
-        }
     }
 
     return Scaffold(
@@ -156,9 +142,9 @@ class EquiposFormState extends State<EquiposForm>{
                 controller: nombre,
               ),
               ComboView<LigaDTO>(
-                label: "Seleccione la Liga",
-                itemValue: ligaValue,
-                itemList: ligasList,
+                label: "Liga",
+                itemValue: widget.equipoDTO.ligaDTO,
+                itemList: widget.ligasDTO,
                 onChange: onChangeLiga,
               ),
               CheckboxListTile(
@@ -191,7 +177,7 @@ class EquiposFormState extends State<EquiposForm>{
 
   void onChangeLiga(LigaDTO newLiga){
     setState(() {
-      ligaValue = newLiga;
+      widget.equipoDTO.ligaDTO = newLiga;
     });
   }
 
