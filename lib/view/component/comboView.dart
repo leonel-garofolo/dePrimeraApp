@@ -2,8 +2,8 @@ import 'package:ag/services/model/dtos.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ComboView<T extends ItemValue> extends StatelessWidget{
-  ComboView({this.label, this.itemValue, this.itemList, this.onChange});
+class FieldComboBox<T extends ItemValue> extends StatelessWidget{
+  FieldComboBox({this.label, this.itemValue, this.itemList, this.onChange});
 
   final String label;
   final List<T> itemList;

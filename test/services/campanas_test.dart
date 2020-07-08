@@ -13,7 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Counter value should be incremented', () async {
     new Dev();
-    CampeonatoServices campeonatosServices = new CampeonatoServices();
+    CampeonatosServices campeonatosServices = new CampeonatosServices();
     List<CampeonatoDTO> campeonatos = await campeonatosServices.getAll();
     print(campeonatos.toString());
 

@@ -83,6 +83,7 @@ class LigaDTO extends ItemValue{
 class CampeonatoDTO {
   int idCampeonato;
   int idLiga;
+  LigaDTO ligaDTO;
   String idModelo;
   String descripcion;
   DateTime fechaInicio;
@@ -101,8 +102,8 @@ class CampeonatoDTO {
     idLiga = json['id_liga'];
     idModelo = json['id_modelo'];
     descripcion = json['descripcion'];
-    fechaInicio = json['fecha_inicio'];
-    fechaFin = json['fecha_fin'];
+    fechaInicio = DateTime.parse(json['fecha_inicio']);
+    fechaFin = DateTime.parse(json['fecha_fin']);
   }
 
   Map<String, dynamic> toJson() {

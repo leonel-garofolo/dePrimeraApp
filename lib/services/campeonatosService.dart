@@ -5,7 +5,7 @@ import 'package:ag/services/http/api.dart';
 import 'package:ag/services/model/dtos.dart';
 
 const String endPoint = "/campeonatos";
-class CampeonatoServices extends API{
+class CampeonatosServices extends API{
 
   Future<List<CampeonatoDTO>> getAll() async{
     try{
@@ -13,10 +13,12 @@ class CampeonatoServices extends API{
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return (json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList();
-      } on Exception {
+      } on Exception catch(e) {
+        print(e);
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

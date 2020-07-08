@@ -1,6 +1,7 @@
 import 'package:ag/services/equiposService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
+import 'package:ag/view/component/checkBoxView.dart';
 import 'package:ag/view/component/comboView.dart';
 import 'package:ag/view/component/fieldListView.dart';
 import 'package:ag/view/component/fieldView.dart';
@@ -23,65 +24,60 @@ class EquiposActivityState extends State<EquiposActivity> {
   @override
   void initState() {
     super.initState();
-    loadEquipos();
   }
 
-   loadEquipos(){
-     ligasServices.getAll().then((response){
-       setState(() {
-         ligas = response;
-         equiposServices.getAll().then((responseEquipo){
-           final List<EquipoDTO> tempEquipos = responseEquipo;
-           for(EquipoDTO equipo in tempEquipos){
-             for(LigaDTO liga in ligas){
-               if(equipo.idLiga == liga.idLiga){
-                 equipo.ligaDTO = liga;
-                 break;
-               }
-             }
-           }
-           setState(() {
-             equipos = tempEquipos;
-           });
-         });
-       });
-     });
+   loadEquipos() async{
+     ligas = await ligasServices.getAll();
+     final List<EquipoDTO> tempEquipos = await equiposServices.getAll();
+     for(EquipoDTO equipo in tempEquipos){
+       for(LigaDTO liga in ligas){
+         if(equipo.idLiga == liga.idLiga){
+           equipo.ligaDTO = liga;
+           break;
+         }
+       }
+     }
+     equipos = tempEquipos;
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget list = Container(
-      child: Text("cargando"),
-    );
-
-    if(equipos != null && equipos.isNotEmpty){
-      list= ListView.separated(
-        padding: const EdgeInsets.all(8),
-        itemCount: equipos.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Center(child: Text('${equipos[index].nombre}')),
-            subtitle: Center(child: Text('${equipos[index].ligaDTO.nombre}')),
-            onTap: () => editEntity(context, equipos[index]),
+    return FutureBuilder<void>(
+        future: loadEquipos(),
+        builder: (BuildContext context, AsyncSnapshot<void>  snapshot) {
+          Widget list = Container(
+            child: Text("cargando"),
           );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      );
-    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Equipos'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-    );
+          if(equipos != null && equipos.isNotEmpty){
+            list= ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: equipos.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Center(child: Text('${equipos[index].nombre}')),
+                  subtitle: Center(child: Text('${equipos[index].ligaDTO.nombre}')),
+                  onTap: () => editEntity(context, equipos[index]),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            );
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Equipos'),
+            ),
+            body: list,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                newEntity(context);
+              },
+              child: Icon(Icons.add),
+              backgroundColor: Colors.lightBlueAccent,
+            ),
+          );
+        });
   }
 
   editEntity(final BuildContext context, EquipoDTO equipoDTO){
@@ -95,7 +91,7 @@ class EquiposActivityState extends State<EquiposActivity> {
   newEntity(final BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => EquiposForm()),
+      MaterialPageRoute(builder: (context) => EquiposForm(ligasDTO: ligas)),
     );
   }
 }
@@ -114,6 +110,7 @@ class EquiposFormState extends State<EquiposForm>{
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
+  LigaDTO ligaValue;
   bool habilitado = false;
   final foto = TextEditingController();
 
@@ -121,6 +118,8 @@ class EquiposFormState extends State<EquiposForm>{
   Widget build(BuildContext context) {
     if(this.widget.equipoDTO != null){
       nombre.text = this.widget.equipoDTO.nombre;
+      if(ligaValue == null)
+        ligaValue = this.widget.equipoDTO.ligaDTO;
       habilitado = this.widget.equipoDTO.habilitado;
       //foto.text = this.widget.equipoDTO.foto;
     }
@@ -141,21 +140,20 @@ class EquiposFormState extends State<EquiposForm>{
                 label: "Nombre",
                 controller: nombre,
               ),
-              ComboView<LigaDTO>(
+              FieldComboBox<LigaDTO>(
                 label: "Liga",
-                itemValue: widget.equipoDTO.ligaDTO,
+                itemValue: ligaValue,
                 itemList: widget.ligasDTO,
                 onChange: onChangeLiga,
               ),
-              CheckboxListTile(
-                title: Text("title text"),
+              FieldCheckbox(
+                label: "Habilitado",
                 value: habilitado,
-                onChanged: (newValue) {
+                valueChanged: (newValue) {
                   setState(() {
                     habilitado = newValue;
                   });
                 },
-                controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
               ),
               SizedBox(
                 width: double.infinity,
@@ -177,7 +175,7 @@ class EquiposFormState extends State<EquiposForm>{
 
   void onChangeLiga(LigaDTO newLiga){
     setState(() {
-      widget.equipoDTO.ligaDTO = newLiga;
+      ligaValue = newLiga;
     });
   }
 
@@ -187,6 +185,8 @@ class EquiposFormState extends State<EquiposForm>{
       equipoDTO.idEquipo = this.widget.equipoDTO.idEquipo;
     }
     equipoDTO.nombre = nombre.text;
+    equipoDTO.idLiga = ligaValue.idLiga;
+    equipoDTO.habilitado = habilitado;
     print(await equiposServices.save(equipoDTO));
     Navigator.pop(context);
   }
