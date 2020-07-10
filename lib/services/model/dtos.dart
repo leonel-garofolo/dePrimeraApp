@@ -225,6 +225,7 @@ class PersonaDTO {
   String domicilio;
   int edad;
   int idLiga;
+  LigaDTO liga;
   int idLocalidad;
   int idPais;
   int idProvincia;
@@ -275,6 +276,7 @@ class PersonaDTO {
 class ArbitroDTO {
   int idArbitro;
   int idPersona;
+  PersonaDTO personaDTO;
 
   ArbitroDTO({this.idArbitro, this.idPersona});
 

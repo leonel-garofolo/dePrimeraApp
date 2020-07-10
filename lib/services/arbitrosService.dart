@@ -7,6 +7,22 @@ import 'package:ag/services/model/dtos.dart';
 const String endPoint = "/arbitros";
 class ArbitrosServices extends API{
 
+  Future<List<ArbitroDTO>> getAll() async{
+    try{
+      final response = await super.getHttp(endPoint);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => ArbitroDTO.fromJson(i)).toList();
+      } on Exception catch(e){
+        print(e);
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
   Future<String> save(ArbitroDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
