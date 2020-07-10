@@ -121,6 +121,10 @@ class CampeonatosFormState extends State<CampeonatosForm>{
       descripcion.text = this.widget.campeonatoDTO.descripcion;
       if(ligaValue == null)
         ligaValue = this.widget.campeonatoDTO.ligaDTO;
+      if(fechaInicio == null)
+        fechaInicio = this.widget.campeonatoDTO.fechaInicio;
+      if(fechaFin == null)
+        fechaFin = this.widget.campeonatoDTO.fechaFin;
     }
 
     return Scaffold(
@@ -147,9 +151,21 @@ class CampeonatosFormState extends State<CampeonatosForm>{
               ),
               FieldDatePicker(
                 label: "Fecha Desde",
+                value: fechaInicio,
+                valueChanged: (date){
+                  setState(() {
+                    fechaInicio = date;
+                  });
+                },
               ),
               FieldDatePicker(
                 label: "Fecha Hasta",
+                value: fechaFin,
+                valueChanged: (date){
+                  setState(() {
+                    fechaFin = date;
+                  });
+                },
               ),
               SizedBox(
                 width: double.infinity,
@@ -182,6 +198,8 @@ class CampeonatosFormState extends State<CampeonatosForm>{
     }
     campeonatoDTO.descripcion = descripcion.text;
     campeonatoDTO.idLiga = ligaValue.idLiga;
+    campeonatoDTO.fechaInicio = fechaInicio;
+    campeonatoDTO.fechaFin = fechaFin;
     print(await campeonatosServices.save(campeonatoDTO));
     Navigator.pop(context);
   }

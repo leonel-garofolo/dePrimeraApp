@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+
+final dateFormat = new DateFormat("yyyy-MM-dd HH:mm");
 class ItemValue{
   String toString();
 }
@@ -112,8 +115,8 @@ class CampeonatoDTO {
     data['id_liga'] = this.idLiga;
     data['id_modelo'] = this.idModelo;
     data['descripcion'] = this.descripcion;
-    data['fecha_inicio'] = this.fechaInicio;
-    data['fecha_fin'] = this.fechaFin;
+    data['fecha_inicio'] = this.fechaInicio.toIso8601String().contains("Z") ? this.fechaInicio.toIso8601String(): this.fechaInicio.toIso8601String() + "Z";
+    data['fecha_fin'] = this.fechaFin.toIso8601String().contains("Z") ? this.fechaFin.toIso8601String(): this.fechaFin.toIso8601String() + "Z";
     return data;
   }
 }
