@@ -296,6 +296,7 @@ class ArbitroDTO {
 class AsistenteDTO {
   int idAsistente;
   int idPersona;
+  PersonaDTO personaDTO;
 
   AsistenteDTO({this.idAsistente, this.idPersona});
 
@@ -312,4 +313,22 @@ class AsistenteDTO {
   }
 }
 
+class JugadorDTO {
+  int idJugador;
+  int idPersona;
+  PersonaDTO personaDTO;
 
+  JugadorDTO({this.idJugador, this.idPersona});
+
+  JugadorDTO.fromJson(Map<String, dynamic> json) {
+    idJugador = json['id_jugador'];
+    idPersona = json['id_persona'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_jugador'] = this.idJugador;
+    data['id_persona'] = this.idPersona;
+    return data;
+  }
+}

@@ -5,14 +5,14 @@ import 'package:ag/services/http/api.dart';
 import 'package:ag/services/model/dtos.dart';
 
 const String endPoint = "/asistentes";
-class AsistentesServices extends API{
+class JugadoresServices extends API{
 
-  Future<List<AsistenteDTO>> getAll() async{
+  Future<List<JugadorDTO>> getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => AsistenteDTO.fromJson(i)).toList();
+        return (json.decode(response.body) as List).map((i) => JugadorDTO.fromJson(i)).toList();
       } on Exception catch(e){
         print(e);
         return null;
@@ -23,7 +23,7 @@ class AsistentesServices extends API{
     }
   }
 
-  Future<String> save(AsistenteDTO dto) async{
+  Future<String> save(JugadorDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{

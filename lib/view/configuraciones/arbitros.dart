@@ -2,7 +2,6 @@ import 'package:ag/services/arbitrosService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
 import 'package:ag/services/personasService.dart';
-import 'package:ag/view/component/fieldCheckBox.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
@@ -95,14 +94,14 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
   editEntity(final BuildContext context, ArbitroDTO arbitroDTO){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArbitrosForm(arbitroDTO: arbitroDTO,)),
+      MaterialPageRoute(builder: (context) => ArbitrosForm(ligasDTO: ligas, arbitroDTO: arbitroDTO,)),
     );
   }
 
   newEntity(final BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArbitrosForm()),
+      MaterialPageRoute(builder: (context) => ArbitrosForm(ligasDTO: ligas)),
     );
   }
 }
@@ -118,10 +117,10 @@ class ArbitrosForm extends StatefulWidget {
 
 class ArbitrosFormState extends State<ArbitrosForm>{
   final ArbitrosServices arbitrosServices = new ArbitrosServices();
+  final PersonasServices personasServices = new PersonasServices();
   final _formKey = GlobalKey<FormState>();
 
   LigaDTO ligaValue;
-
 
   final apellidoNombre = TextEditingController();
   final domicilio = TextEditingController();
@@ -137,16 +136,14 @@ class ArbitrosFormState extends State<ArbitrosForm>{
   @override
   Widget build(BuildContext context) {
     if(this.widget.arbitroDTO != null){
-      apellidoNombre.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      domicilio.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      edad.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      idLiga.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      idLocalidad.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      idPais.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      idProvincia.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-      idTipoDoc.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
+      apellidoNombre.text = this.widget.arbitroDTO.personaDTO.apellidoNombre;
+      domicilio.text = this.widget.arbitroDTO.personaDTO.domicilio;
+      edad.text = this.widget.arbitroDTO.personaDTO.edad.toString();
+      idLocalidad.text = this.widget.arbitroDTO.personaDTO.idLocalidad.toString();
+      idPais.text = this.widget.arbitroDTO.personaDTO.idPais.toString();
+      idProvincia.text = this.widget.arbitroDTO.personaDTO.idProvincia.toString();
+      idTipoDoc.text = this.widget.arbitroDTO.personaDTO.idTipoDoc.toString();
       nroDoc.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-
 
       if(ligaValue == null)
         ligaValue = this.widget.arbitroDTO.personaDTO.liga;
@@ -166,7 +163,7 @@ class ArbitrosFormState extends State<ArbitrosForm>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               FieldText(
-                label: "Nombre",
+                label: "Apellido y Nombre",
                 controller: apellidoNombre,
               ),
               FieldComboBox<LigaDTO>(
@@ -217,17 +214,23 @@ class ArbitrosFormState extends State<ArbitrosForm>{
 
   save() async{
     final ArbitroDTO arbitroDTO = new ArbitroDTO();
+    final PersonaDTO personaDTO = new PersonaDTO(
+      apellidoNombre: apellidoNombre.text,
+      idLiga: ligaValue.idLiga,
+      idTipoDoc: int.parse(idTipoDoc.text),
+      nroDoc: int.parse(nroDoc.text),
+      domicilio: domicilio.text,
+      edad: int.parse(edad.text),
+    );
+    
     if(this.widget.arbitroDTO != null){
-      arbitroDTO.idPersona = this.widget.arbitroDTO.idPersona;
+      personaDTO.idPersona = this.widget.arbitroDTO.idPersona;
       arbitroDTO.idArbitro = this.widget.arbitroDTO.idArbitro;
     }
-    arbitroDTO.personaDTO.apellidoNombre = apellidoNombre.text;
-    arbitroDTO.personaDTO.idLiga = ligaValue.idLiga;
-    arbitroDTO.personaDTO.idTipoDoc = int.parse(idTipoDoc.text);
-    arbitroDTO.personaDTO.nroDoc = int.parse(nroDoc.text);
-    arbitroDTO.personaDTO.domicilio = domicilio.text;
-    arbitroDTO.personaDTO.edad = int.parse(edad.text);
-
+    
+    final String id = await personasServices.save(personaDTO);
+    arbitroDTO.idPersona = int.parse(id);
+    print(id);
     print(await arbitrosServices.save(arbitroDTO));
     Navigator.pop(context);
   }
