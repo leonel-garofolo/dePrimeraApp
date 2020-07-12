@@ -1,4 +1,5 @@
 import 'package:ag/view/configuration.dart';
+import 'package:ag/view/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,25 +11,29 @@ class NavDrawer extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            child: Text(
-              'Side menu',
-              style: TextStyle(color: Colors.white, fontSize: 25),
-            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'Leonel Garofolo',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  Text(
+                    'Admin',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                ],
+          ),
             decoration: BoxDecoration(
-                color: Colors.green,
                 image: DecorationImage(
                     fit: BoxFit.fill,
-                    image: AssetImage('assets/images/cover.jpg'))),
+                    image: AssetImage('assets/images/sports.png'))),
           ),
           ListTile(
-            leading: Icon(Icons.input),
-            title: Text('Welcome'),
+            leading: Icon(Icons.calendar_today),
+            title: Text('Fixtures'),
             onTap: () => {},
-          ),
-          ListTile(
-            leading: Icon(Icons.verified_user),
-            title: Text('Profile'),
-            onTap: () => {Navigator.of(context).pop()},
           ),
           ListTile(
             leading: Icon(Icons.settings),
@@ -40,7 +45,9 @@ class NavDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.border_color),
             title: Text('Notificaciones'),
-            onTap: () => {Navigator.of(context).pop()},
+            onTap: () => {
+              openNotification(context)
+            },
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
@@ -56,6 +63,13 @@ class NavDrawer extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => Configuration()),
+    );
+  }
+
+  openNotification(BuildContext context){
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NotificationMessages()),
     );
   }
 }

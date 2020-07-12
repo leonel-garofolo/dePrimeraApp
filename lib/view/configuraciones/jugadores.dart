@@ -32,18 +32,18 @@ class JugadoresActivityState extends State<JugadoresActivity> {
     ligas = await ligasServices.getAll();
     personas = await personasServices.getAll();
     final List<JugadorDTO> tempJugadores = await jugadoresServices.getAll();
-    for(JugadorDTO jugadore in tempJugadores){
+    for(JugadorDTO jugador in tempJugadores){
       for(PersonaDTO persona in personas){
-        if(jugadore.idPersona == persona.idPersona){
-          jugadore.personaDTO = persona;
+        if(jugador.idPersona == persona.idPersona){
+          jugador.personaDTO = persona;
           break;
         }
       }
 
       for(LigaDTO liga in ligas){
-        if(jugadore.personaDTO != null && jugadore.personaDTO.idLiga == liga.idLiga){
-          jugadore.personaDTO.idLiga = liga.idLiga;
-          jugadore.personaDTO.liga = liga;
+        if(jugador.personaDTO != null && jugador.personaDTO.idLiga == liga.idLiga){
+          jugador.personaDTO.idLiga = liga.idLiga;
+          jugador.personaDTO.liga = liga;
           break;
         }
       }
@@ -57,22 +57,28 @@ class JugadoresActivityState extends State<JugadoresActivity> {
         future: loadJugadores(),
         builder: (BuildContext context, AsyncSnapshot<void>  snapshot) {
           Widget list = Container(
-            child: Text("cargando"),
+            child: Text("Cargando"),
           );
 
           if(jugadores != null && jugadores.isNotEmpty){
-            list= ListView.separated(
-              padding: const EdgeInsets.all(8),
-              itemCount: jugadores.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Center(child: Text('${jugadores[index].personaDTO.apellidoNombre}')),
-                  subtitle: Center(child: Text('${jugadores[index].personaDTO.idTipoDoc.toString() + " - " +  jugadores[index].personaDTO.nroDoc.toString()}')),
-                  onTap: () => editEntity(context, jugadores[index]),
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
-            );
+            if(jugadores.isNotEmpty){
+              list= ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: jugadores.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Center(child: Text('${jugadores[index].personaDTO.apellidoNombre}')),
+                    subtitle: Center(child: Text('${jugadores[index].personaDTO.idTipoDoc.toString() + " - " +  jugadores[index].personaDTO.nroDoc.toString()}')),
+                    onTap: () => editEntity(context, jugadores[index]),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => const Divider(),
+              );
+            } else {
+              list = Container(
+                child: Text("No se encontraron Datos"),
+              );
+            }
           }
 
           return Scaffold(
@@ -94,7 +100,7 @@ class JugadoresActivityState extends State<JugadoresActivity> {
   editEntity(final BuildContext context, JugadorDTO jugadoreDTO){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => JugadoresForm(ligasDTO: ligas, jugadoreDTO: jugadoreDTO,)),
+      MaterialPageRoute(builder: (context) => JugadoresForm(ligasDTO: ligas, jugadorDTO: jugadoreDTO,)),
     );
   }
 
@@ -107,10 +113,10 @@ class JugadoresActivityState extends State<JugadoresActivity> {
 }
 
 class JugadoresForm extends StatefulWidget {
-  JugadoresForm({Key key, this.ligasDTO, this.jugadoreDTO}) : super(key: key);
+  JugadoresForm({Key key, this.ligasDTO, this.jugadorDTO}) : super(key: key);
 
   final List<LigaDTO> ligasDTO;
-  final JugadorDTO jugadoreDTO;
+  final JugadorDTO jugadorDTO;
   @override
   JugadoresFormState createState() => JugadoresFormState();
 }
@@ -135,25 +141,25 @@ class JugadoresFormState extends State<JugadoresForm>{
 
   @override
   Widget build(BuildContext context) {
-    if(this.widget.jugadoreDTO != null){
-      apellidoNombre.text = this.widget.jugadoreDTO.personaDTO.apellidoNombre;
-      domicilio.text = this.widget.jugadoreDTO.personaDTO.domicilio;
-      edad.text = this.widget.jugadoreDTO.personaDTO.edad.toString();
-      idLocalidad.text = this.widget.jugadoreDTO.personaDTO.idLocalidad.toString();
-      idPais.text = this.widget.jugadoreDTO.personaDTO.idPais.toString();
-      idProvincia.text = this.widget.jugadoreDTO.personaDTO.idProvincia.toString();
-      idTipoDoc.text = this.widget.jugadoreDTO.personaDTO.idTipoDoc.toString();
-      nroDoc.text = this.widget.jugadoreDTO.personaDTO.nroDoc.toString();
+    if(this.widget.jugadorDTO != null){
+      apellidoNombre.text = this.widget.jugadorDTO.personaDTO.apellidoNombre;
+      domicilio.text = this.widget.jugadorDTO.personaDTO.domicilio;
+      edad.text = this.widget.jugadorDTO.personaDTO.edad.toString();
+      idLocalidad.text = this.widget.jugadorDTO.personaDTO.idLocalidad.toString();
+      idPais.text = this.widget.jugadorDTO.personaDTO.idPais.toString();
+      idProvincia.text = this.widget.jugadorDTO.personaDTO.idProvincia.toString();
+      idTipoDoc.text = this.widget.jugadorDTO.personaDTO.idTipoDoc.toString();
+      nroDoc.text = this.widget.jugadorDTO.personaDTO.nroDoc.toString();
 
       if(ligaValue == null)
-        ligaValue = this.widget.jugadoreDTO.personaDTO.liga;
+        ligaValue = this.widget.jugadorDTO.personaDTO.liga;
 
     }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.jugadoreDTO != null? this.widget.jugadoreDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -223,9 +229,9 @@ class JugadoresFormState extends State<JugadoresForm>{
       edad: int.parse(edad.text),
     );
 
-    if(this.widget.jugadoreDTO != null){
-      personaDTO.idPersona = this.widget.jugadoreDTO.idPersona;
-      jugadorDTO.idJugador = this.widget.jugadoreDTO.idJugador;
+    if(this.widget.jugadorDTO != null){
+      personaDTO.idPersona = this.widget.jugadorDTO.idPersona;
+      jugadorDTO.idJugador = this.widget.jugadorDTO.idJugador;
     }
 
     final String id = await personasServices.save(personaDTO);

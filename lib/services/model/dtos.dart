@@ -332,3 +332,25 @@ class JugadorDTO {
     return data;
   }
 }
+
+class NotificacionDTO {
+  int idNotificacion;
+  String titulo;
+  String texto;
+
+  NotificacionDTO({this.idNotificacion, this.titulo, this.texto});
+
+  NotificacionDTO.fromJson(Map<String, dynamic> json) {
+    idNotificacion = json['id_notificacion'];
+    titulo = json['titulo'];
+    texto = json['texto'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_notificacion'] = this.idNotificacion;
+    data['titulo'] = this.titulo;
+    data['texto'] = this.texto;
+    return data;
+  }
+}
