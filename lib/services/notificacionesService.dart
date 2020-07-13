@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:ag/services/http/api.dart';
 import 'package:ag/services/model/dtos.dart';
 
-const String endPoint = "/jugadores";
+const String endPoint = "/notificaciones";
 class NotificacionesServices extends API{
 
   Future<List<NotificacionDTO>> getAll() async{

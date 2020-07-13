@@ -1,4 +1,4 @@
-import 'package:ag/services/NotificacionesService.dart';
+import 'package:ag/services/notificacionesService.dart';
 import 'package:ag/services/model/dtos.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +21,7 @@ class NotificationMessagesState extends State<NotificationMessages> {
 
   loadNotificaciones() async{
     notificaciones = await notificacionesServices.getAll();
+    print(notificaciones);
   }
 
   @override
@@ -55,7 +56,7 @@ class NotificationMessagesState extends State<NotificationMessages> {
 
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Jugadores'),
+              title: const Text('Notificaciones'),
             ),
             body: list,
             floatingActionButton: FloatingActionButton(
@@ -95,6 +96,8 @@ class NotificacionesForm extends StatefulWidget {
 
 class NotificacionesFormState extends State<NotificacionesForm>{
   final _formKey = GlobalKey<FormState>();
+  final NotificacionesServices notificacionesServices = new NotificacionesServices();
+
   final titulo = TextEditingController();
   final texto = TextEditingController();
 
@@ -144,7 +147,15 @@ class NotificacionesFormState extends State<NotificacionesForm>{
     );
   }
 
-  void enviar(){
-
+  void enviar() async{
+    final NotificacionDTO notificacionDTO = new NotificacionDTO();
+    if(this.widget.notificationDTO != null){
+      notificacionDTO.idNotificacion = this.widget.notificationDTO.idNotificacion;
+    }
+    notificacionDTO.titulo = titulo.text;
+    notificacionDTO.texto = texto.text;
+    notificacionDTO.idGrupo = 1;
+    await notificacionesServices.save(notificacionDTO);
+    Navigator.pop(context);
   }
 }

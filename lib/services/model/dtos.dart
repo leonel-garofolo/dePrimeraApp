@@ -337,6 +337,7 @@ class NotificacionDTO {
   int idNotificacion;
   String titulo;
   String texto;
+  int idGrupo;
 
   NotificacionDTO({this.idNotificacion, this.titulo, this.texto});
 
@@ -344,6 +345,7 @@ class NotificacionDTO {
     idNotificacion = json['id_notificacion'];
     titulo = json['titulo'];
     texto = json['texto'];
+    idGrupo = json['id_grupo'];
   }
 
   Map<String, dynamic> toJson() {
@@ -351,6 +353,7 @@ class NotificacionDTO {
     data['id_notificacion'] = this.idNotificacion;
     data['titulo'] = this.titulo;
     data['texto'] = this.texto;
+    data['id_grupo'] = this.idGrupo;
     return data;
   }
 }
