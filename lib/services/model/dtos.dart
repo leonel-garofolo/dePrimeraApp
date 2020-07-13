@@ -338,6 +338,7 @@ class NotificacionDTO {
   String titulo;
   String texto;
   int idGrupo;
+  AppGruposDTO appGruposDTO;
 
   NotificacionDTO({this.idNotificacion, this.titulo, this.texto});
 
@@ -355,5 +356,29 @@ class NotificacionDTO {
     data['texto'] = this.texto;
     data['id_grupo'] = this.idGrupo;
     return data;
+  }
+}
+
+class AppGruposDTO extends ItemValue{
+  int idAppGrupos;
+  String descripcion;
+
+  AppGruposDTO({this.idAppGrupos, this.descripcion});
+
+  AppGruposDTO.fromJson(Map<String, dynamic> json) {
+    idAppGrupos = json['id_grupo'];
+    descripcion = json['descripcion'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_grupo'] = this.idAppGrupos;
+    data['descripcion'] = this.descripcion;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return descripcion;
   }
 }

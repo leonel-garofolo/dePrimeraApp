@@ -1,5 +1,7 @@
+import 'package:ag/services/appGruposService.dart';
 import 'package:ag/services/notificacionesService.dart';
 import 'package:ag/services/model/dtos.dart';
+import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +15,9 @@ class NotificationMessages extends StatefulWidget {
 
 class NotificationMessagesState extends State<NotificationMessages> {
   final notificacionesServices = new NotificacionesServices();
+  final appGruposServices = new AppGruposServices();
   List<NotificacionDTO> notificaciones;
+  List<AppGruposDTO> appGrupos;
   @override
   void initState() {
     super.initState();
@@ -21,6 +25,15 @@ class NotificationMessagesState extends State<NotificationMessages> {
 
   loadNotificaciones() async{
     notificaciones = await notificacionesServices.getAll();
+    appGrupos = await appGruposServices.getAll();
+    for(AppGruposDTO appGruposDTO in appGrupos){
+      for(NotificacionDTO notificacionDTO in notificaciones){
+        if(appGruposDTO.idAppGrupos == notificacionDTO.idGrupo){
+          notificacionDTO.appGruposDTO = appGruposDTO;
+          continue;
+        }
+      }
+    }
     print(notificaciones);
   }
 
@@ -41,7 +54,7 @@ class NotificationMessagesState extends State<NotificationMessages> {
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     title: Center(child: Text('${notificaciones[index].titulo}')),
-                    subtitle: Center(child: Text('${notificaciones[index].texto}')),
+                    subtitle: Center(child: Text('${notificaciones[index].appGruposDTO.descripcion}')),
                     onTap: () => editEntity(context, notificaciones[index]),
                   );
                 },
@@ -73,23 +86,24 @@ class NotificationMessagesState extends State<NotificationMessages> {
   editEntity(final BuildContext context, NotificacionDTO notificacionDTO){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NotificacionesForm(notificationDTO: notificacionDTO,)),
+      MaterialPageRoute(builder: (context) => NotificacionesForm(notificationDTO: notificacionDTO, appGrupos: appGrupos,)),
     );
   }
 
   newEntity(final BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => NotificacionesForm()),
+      MaterialPageRoute(builder: (context) => NotificacionesForm(appGrupos: appGrupos)),
     );
   }
 }
 
 
 class NotificacionesForm extends StatefulWidget {
-  NotificacionesForm({Key key, this.notificationDTO}) : super(key: key);
+  NotificacionesForm({Key key, this.notificationDTO, this.appGrupos}) : super(key: key);
 
   final NotificacionDTO notificationDTO;
+  final List<AppGruposDTO> appGrupos;
   @override
   NotificacionesFormState createState() => NotificacionesFormState();
 }
@@ -100,13 +114,15 @@ class NotificacionesFormState extends State<NotificacionesForm>{
 
   final titulo = TextEditingController();
   final texto = TextEditingController();
+  AppGruposDTO appGrupoValue;
 
   @override
   Widget build(BuildContext context) {
     if(this.widget.notificationDTO != null){
       titulo.text = this.widget.notificationDTO.titulo;
       texto.text = this.widget.notificationDTO.texto;
-
+      if(appGrupoValue == null)
+        appGrupoValue = this.widget.notificationDTO.appGruposDTO;
     }
 
     return Scaffold(
@@ -129,6 +145,12 @@ class NotificacionesFormState extends State<NotificacionesForm>{
                 label: "Texto",
                 controller: texto,
               ),
+              FieldComboBox<AppGruposDTO>(
+                label: "Grupo",
+                itemValue: appGrupoValue,
+                itemList: widget.appGrupos,
+                onChange: onChangeAppGrupo,
+              ),
               SizedBox(
                 width: double.infinity,
                 child: RaisedButton(
@@ -147,6 +169,12 @@ class NotificacionesFormState extends State<NotificacionesForm>{
     );
   }
 
+  void onChangeAppGrupo(AppGruposDTO appGruposDTO) {
+    setState(() {
+      appGrupoValue = appGruposDTO;
+    });
+  }
+
   void enviar() async{
     final NotificacionDTO notificacionDTO = new NotificacionDTO();
     if(this.widget.notificationDTO != null){
@@ -154,7 +182,7 @@ class NotificacionesFormState extends State<NotificacionesForm>{
     }
     notificacionDTO.titulo = titulo.text;
     notificacionDTO.texto = texto.text;
-    notificacionDTO.idGrupo = 1;
+    notificacionDTO.idGrupo = appGrupoValue.idAppGrupos;
     await notificacionesServices.save(notificacionDTO);
     Navigator.pop(context);
   }
