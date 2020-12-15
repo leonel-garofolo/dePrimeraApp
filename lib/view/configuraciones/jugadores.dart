@@ -159,7 +159,7 @@ class JugadoresFormState extends State<JugadoresForm>{
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.apellidoNombre : "Nuevo Jugador"}"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

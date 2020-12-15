@@ -110,7 +110,7 @@ class _ConfigurationState extends State<Configuration> {
         w = AsistentesActivity();
         break;
       case T_JUGADORES:
-        w = JugadoresForm();
+        w = JugadoresActivity();
         break;
     }
     Navigator.push(
