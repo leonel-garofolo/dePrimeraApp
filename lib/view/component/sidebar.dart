@@ -8,27 +8,24 @@ class NavDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
-        padding: EdgeInsets.zero,
         children: <Widget>[
-          DrawerHeader(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Leonel Garofolo',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                  Text(
-                    'Admin',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-          ),
+          Container(
             decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: AssetImage('assets/images/sports.png'))),
+              color: Colors.blue,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 50),
+                Padding(
+                        padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'De Primera',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                ),
+              ],
+            )
           ),
           ListTile(
             leading: Icon(Icons.calendar_today),
