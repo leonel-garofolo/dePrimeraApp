@@ -1,3 +1,4 @@
+import 'package:ag/view/component/cardGame.dart';
 import 'package:ag/view/component/sidebar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +10,15 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  TabController tabController;
   Choice _selectedChoice = itemsMenuChoices[0]; // The app's "state".
+
+  @override
+  void initState() {
+    super.initState();
+    tabController = new TabController(length: 10, vsync: this);
+  }
 
   void _select(Choice choice) {
     // Causes the app to rebuild with the new _selectedChoice.
@@ -45,56 +53,104 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('De Primera'),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.search),
-              onPressed: () {
-                showSearch(context: context, delegate: DataSearch(listWords));
-              }),
-          PopupMenuButton<Choice>(
-            onSelected: _select,
-            itemBuilder: (BuildContext context) {
-              return itemsMenuChoices.map((Choice choice) {
-                return PopupMenuItem<Choice>(
-                  value: choice,
-                  child: Row(
-                    children: <Widget>[
-                      Text(choice.title),
-                      Icon(choice.icon),
-                    ],
-                  ),
-                );
-              }).toList();
-            },
+    return DefaultTabController(
+        length: 3,
+        child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Encuentros'),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.search),
+                onPressed: () {
+                  showSearch(
+                      context: context,
+                      delegate: DataSearch("equipo o torneo", listWords),
+                  );
+                }),
+            PopupMenuButton<Choice>(
+              onSelected: _select,
+              itemBuilder: (BuildContext context) {
+                return itemsMenuChoices.map((Choice choice) {
+                  return PopupMenuItem<Choice>(
+                    value: choice,
+                    child: Row(
+                      children: <Widget>[
+                        Text(choice.title),
+                        Icon(choice.icon),
+                      ],
+                    ),
+                  );
+                }).toList();
+              },
+            ),
+          ],
+          bottom: TabBar(
+            //controller: tabController,
+            tabs: [
+              Tab(text: 'Ayer'),
+              Tab(text: "Hoy",),
+              Tab(text: "Mañana",),
+            ],
           ),
-        ],
-      ),
-      drawer: NavDrawer(),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Home'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            title: Text('Business'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            title: Text('School'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
+        ),
+        body: TabBarView(
+          children: [
+            showGames(-1),
+            showGames(0),
+            showGames(1),
+          ],
+
+        ),
+
+        drawer: NavDrawer(),
+        )
     );
+  }
+
+  showGames(day) {
+    switch(day) {
+      case -1:
+        return new ListView.builder
+          (
+            itemCount: 2,
+            itemBuilder: (BuildContext ctxt, int index) {
+              return CardGame(
+                championName: 'Copa - grupo A',
+                date: DateTime.now(),
+                localName: 'Central',
+                localGoal: '1',
+                visitName: 'River',
+                visitGoal: '0',
+              );
+            }
+        );
+        break;
+      case 0:
+        return new ListView.builder
+          (
+            itemCount: 10,
+            itemBuilder: (BuildContext ctxt, int index) {
+              return CardGame(
+                championName: 'Copa - grupo A',
+                date: DateTime.now(),
+                localName: 'Central',
+                localGoal: '1',
+                visitName: 'River',
+                visitGoal: '0',
+              );
+            }
+        );
+        break;
+      case 1:
+        return CardGame(
+          championName: 'Copa - grupo A',
+          date: DateTime.now(),
+          localName: 'Central',
+          localGoal: '1',
+          visitName: 'River',
+          visitGoal: '0',
+        );
+        break;
+    }
   }
 }
 
@@ -113,15 +169,20 @@ const List<Choice> itemsMenuChoices = const <Choice>[
 
 
 class DataSearch extends SearchDelegate<String> {
+  @override
+  String get searchFieldLabel => hint;
+  final String hint;
   final List<ListWords> listWords;
-  DataSearch(this.listWords);
+  DataSearch(this.hint, this.listWords);
 
   @override
   List<Widget> buildActions(BuildContext context) {
     //Actions for app bar
-    return [IconButton(icon: Icon(Icons.clear), onPressed: () {
+    return [
+
+      IconButton(icon: Icon(Icons.clear), onPressed: () {
       query = '';
-    })];
+      })];
   }
 
   @override

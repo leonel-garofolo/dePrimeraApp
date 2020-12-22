@@ -35,6 +35,20 @@ class PartidosServices extends API{
     }
   }
 
+  Future<List<PartidoDTO>> getForDate(String date) async{
+    try{
+      final response = await super.getHttp(endPoint + "/date/" + date);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList();
+      } on Exception {
+        return null;
+      }
+    } on Exception catch(e) {
+      return null;
+    }
+  }
+
   Future<String> save(PartidoDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
