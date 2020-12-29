@@ -41,6 +41,10 @@ class LigasActivityState extends State<LigasActivity> {
           },
           separatorBuilder: (BuildContext context, int index) => const Divider(),
         );
+      } else if(snapshot.data == null || (snapshot.data != null && snapshot.data.isEmpty)){
+        list = Container(
+          child: Text("Sin Datos"),
+        );
       }
 
       return Scaffold(

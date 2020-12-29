@@ -1,10 +1,8 @@
 import 'package:ag/services/campeonatosService.dart';
 import 'package:ag/services/ligasService.dart';
 import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/component/fieldCheckBox.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldDatePicker.dart';
-import 'package:ag/view/component/fieldListView.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

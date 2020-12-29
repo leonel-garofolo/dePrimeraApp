@@ -16,6 +16,7 @@ class PartidosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -30,13 +31,14 @@ class PartidosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
 
-  Future<List<PartidoDTO>> getForDate(String date) async{
+  Future<List<PartidoDTO>> getHistory(int id) async{
     try{
-      final response = await super.getHttp(endPoint + "/date/" + date);
+      final response = await super.getHttp(endPoint + "/history/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return (json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList();
@@ -44,6 +46,22 @@ class PartidosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<List<PartidosFromDateDTO>> getForDate(String date) async{
+    try{
+      final response = await super.getHttp(endPoint + "/date/" + date);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList();
+      } on Exception {
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -58,6 +76,7 @@ class PartidosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -72,6 +91,7 @@ class PartidosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

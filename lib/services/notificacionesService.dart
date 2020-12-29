@@ -33,6 +33,7 @@ class NotificacionesServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -47,6 +48,7 @@ class NotificacionesServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

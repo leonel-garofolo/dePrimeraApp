@@ -4,31 +4,15 @@ import 'dart:convert';
 import 'package:ag/services/http/api.dart';
 import 'package:ag/services/model/dtos.dart';
 
-const String endPoint = "/equipos";
-class EquiposServices extends API{
+const String endPoint = "/authentication";
+class AuthenticationServices extends API{
 
-  Future<List<EquipoDTO>> getAll() async{
+  Future<UserDTO> login(UserDTO dto) async{
     try{
-      final response = await super.getHttp(endPoint);
+      final response = await super.postHttp(endPoint + "/login", dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList();
-      } on Exception catch(e){
-        print(e);
-        return null;
-      }
-    } on Exception catch(e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<EquipoDTO> get(int id) async{
-    try{
-      final response = await super.getHttp(endPoint + "/" + id.toString());
-      try{
-        // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return  EquipoDTO.fromJson(json.decode(response.body));
+        return UserDTO.fromJson(json.decode(response.body));
       } on Exception {
         return null;
       }
@@ -38,9 +22,9 @@ class EquiposServices extends API{
     }
   }
 
-  Future<String> save(EquipoDTO dto) async{
+  Future<String> createAccount(UserDTO dto) async{
     try{
-      final response = await super.postHttp(endPoint, dto);
+      final response = await super.postHttp(endPoint + "/reset", dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return response.body;
@@ -53,9 +37,9 @@ class EquiposServices extends API{
     }
   }
 
-  Future<String> delete(int id) async{
+  Future<String> forgot(UserDTO dto) async{
     try{
-      final response = await super.deleteHttp(endPoint + "/" + id.toString());
+      final response = await super.postHttp(endPoint + "/forgot", dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return response.body;
@@ -65,6 +49,21 @@ class EquiposServices extends API{
     } on Exception catch(e) {
       print(e);
       return null;
+    }
+  }
+
+  Future<bool> logout(UserDTO dto) async{
+    try{
+      final response = await super.postHttp(endPoint + "/logout", dto);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return response.body.toLowerCase() == 'true';
+      } on Exception {
+        return false;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return false;
     }
   }
 }

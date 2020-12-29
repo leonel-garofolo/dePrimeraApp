@@ -33,6 +33,55 @@ class CampeonatosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<List<PartidosFromDateDTO>> getFixture(int id) async{
+    try{
+      final response = await super.getHttp(endPoint + "/fixture/" + id.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList();
+      } on Exception catch(e) {
+        print(e);
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<List<EquipoTablePosDTO>> getTablePosition(int id) async{
+    try{
+      final response = await super.getHttp(endPoint + "/table/" + id.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => EquipoTablePosDTO.fromJson(i)).toList();
+      } on Exception catch(e) {
+        print(e);
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<List<SancionesJugadoresFromCampeonatoDTO>> getTableSanciones(int id) async{
+    try{
+      final response = await super.getHttp(endPoint + "/sanciones/" + id.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return (json.decode(response.body) as List).map((i) => SancionesJugadoresFromCampeonatoDTO.fromJson(i)).toList();
+      } on Exception catch(e) {
+        print(e);
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -47,6 +96,7 @@ class CampeonatosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }
@@ -61,6 +111,7 @@ class CampeonatosServices extends API{
         return null;
       }
     } on Exception catch(e) {
+      print(e);
       return null;
     }
   }

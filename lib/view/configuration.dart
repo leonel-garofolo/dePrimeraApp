@@ -4,7 +4,6 @@ import 'package:ag/view/configuraciones/campeonatos.dart';
 import 'package:ag/view/configuraciones/equipos.dart';
 import 'package:ag/view/configuraciones/jugadores.dart';
 import 'package:ag/view/configuraciones/ligas.dart';
-import 'package:ag/view/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

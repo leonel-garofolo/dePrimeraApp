@@ -1,72 +1,40 @@
+import 'package:ag/helper/sharedPreferencesHelper.dart';
+import 'package:ag/services/authenticationService.dart';
+import 'package:ag/services/ligasService.dart';
+import 'package:ag/services/model/dtos.dart';
 import 'package:ag/view/configuration.dart';
+import 'package:ag/view/authentication/login.dart';
 import 'package:ag/view/notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Menu {
+  Icon icon;
+  String nombre;
+  bool isSubMenu;
+  String pathGo;
+  CampeonatoDTO campeonatoDTO;
+
+  Menu({this.icon, this.nombre, this.isSubMenu, this.pathGo, this.campeonatoDTO});
+}
 
 class NavDrawer extends StatelessWidget {
+  NavDrawer(this.items);
+  final List<Widget> items;
+
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: 50),
-                Padding(
-                        padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'De Primera',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
-                    ),
-                ),
-              ],
-            )
-          ),
-          ListTile(
-            leading: Icon(Icons.calendar_today),
-            title: Text('Fixtures'),
-            onTap: () => {},
-          ),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Configuraciones'),
-            onTap: () => {
-              openConfig(context)
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.border_color),
-            title: Text('Notificaciones'),
-            onTap: () => {
-              openNotification(context)
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Salir'),
-            onTap: () => {Navigator.of(context).pop()},
-          ),
-        ],
-      ),
+    Column col = Column(
+      mainAxisSize: MainAxisSize.max,
     );
-  }
 
-  openConfig(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Configuration()),
-    );
-  }
-
-  openNotification(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => NotificationMessages()),
-    );
+    if(items != null){
+      col = Column(
+        mainAxisSize: MainAxisSize.max,
+        children: items,
+      );
+    }
+    return Drawer(child: col);
   }
 }

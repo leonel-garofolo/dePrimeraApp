@@ -151,6 +151,75 @@ class EquipoDTO {
   }
 }
 
+class EquipoTablePosDTO {
+  int idCampeonato;
+  int idEquipo;
+  String nombre;
+  int nroEquipo;
+  int puntos;
+  int partidosGanados;
+  int partidosEmpatados;
+  int partidosPerdidos;
+
+  EquipoTablePosDTO(
+      {this.idCampeonato, this.idEquipo, this.nombre, this.nroEquipo, this.puntos,
+        this.partidosGanados, this.partidosEmpatados, this.partidosPerdidos});
+
+  EquipoTablePosDTO.fromJson(Map<String, dynamic> json) {
+    idCampeonato = json['id_campeonato'];
+    idEquipo = json['id_equipo'];
+    nombre = json['nombre'];
+    nroEquipo = json['nro_equipo'];
+    puntos = json['puntos'];
+    partidosGanados = json['p_gan'];
+    partidosEmpatados = json['p_emp'];
+    partidosPerdidos = json['p_per'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_campeonato'] = this.idCampeonato;
+    data['id_equipo'] = this.idEquipo;
+    data['nombre'] = this.nombre;
+    data['nro_equipo'] = this.nroEquipo;
+    data['puntos'] = this.puntos;
+    data['p_gan'] = this.partidosGanados;
+    data['p_emp'] = this.partidosEmpatados;
+    data['p_per'] = this.partidosPerdidos;
+    return data;
+  }
+}
+
+class SancionesJugadoresFromCampeonatoDTO {
+  String apellidoNombre;
+  String eNombre;
+  int  cRojas;
+  int cAmarillas;
+  int cAzules;
+
+  SancionesJugadoresFromCampeonatoDTO(
+      {this.apellidoNombre, this.eNombre, this.cRojas, this.cAmarillas, this.cAzules});
+
+  SancionesJugadoresFromCampeonatoDTO.fromJson(Map<String, dynamic> json) {
+    apellidoNombre = json['apellido_nombre'];
+    eNombre = json['e_nombre'];
+    cRojas = json['c_rojas'];
+    cAmarillas = json['c_amarillas'];
+    cAzules = json['c_azules'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['apellido_nombre'] = this.apellidoNombre;
+    data['e_nombre'] = this.eNombre;
+    data['c_rojas'] = this.cRojas;
+    data['c_amarillas'] = this.cAmarillas;
+    data['c_azules'] = this.cAzules;
+    return data;
+  }
+}
+
+
 
 class PartidoDTO {
   int idPartidos;
@@ -211,6 +280,57 @@ class PartidoDTO {
     data['id_partidos'] = this.idPartidos;
     data['motivo_suspencion'] = this.motivoSuspencion;
     data['observacion'] = this.observacion;
+    data['resultado_local'] = this.resultadoLocal;
+    data['resultado_visitante'] = this.resultadoVisitante;
+    data['suspendido'] = this.suspendido;
+    return data;
+  }
+}
+
+class PartidosFromDateDTO {
+  int idPartidos;
+
+  String fechaEncuentro;
+  String ligaName;
+  String campeonatoName;
+  String eLocalName;
+  String eVisitName;
+  int resultadoLocal;
+  int resultadoVisitante;
+  bool suspendido;
+
+  PartidosFromDateDTO(
+      {this.idPartidos,
+        this.fechaEncuentro,
+        this.ligaName,
+        this.campeonatoName,
+        this.eLocalName,
+        this.eVisitName,
+        this.resultadoLocal,
+        this.resultadoVisitante,
+        this.suspendido
+      });
+
+  PartidosFromDateDTO.fromJson(Map<String, dynamic> json) {
+    idPartidos = json['id_partidos'];
+    fechaEncuentro = json['fecha_encuentro'];
+    ligaName = json['liga_name'];
+    campeonatoName = json['campeonato_name'];
+    eLocalName = json['e_local_name'];
+    eVisitName = json['e_visit_name'];
+    resultadoLocal = json['resultado_local'];
+    resultadoVisitante = json['resultado_visitante'];
+    //suspendido = json['suspendido'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_partidos'] = this.idPartidos;
+    data['fecha_encuentro'] = this.fechaEncuentro;
+    data['liga_name'] = this.ligaName;
+    data['campeonato_name'] = this.campeonatoName;
+    data['e_local_name'] = this.eLocalName;
+    data['e_visit_name'] = this.eVisitName;
     data['resultado_local'] = this.resultadoLocal;
     data['resultado_visitante'] = this.resultadoVisitante;
     data['suspendido'] = this.suspendido;
@@ -380,5 +500,49 @@ class AppGruposDTO extends ItemValue{
   @override
   String toString() {
     return descripcion;
+  }
+}
+
+
+class UserDTO extends ItemValue{
+  String idUser;
+  String password;
+  String nombre;
+  String apellido;
+  String telefono;
+  bool habilitado;
+
+  UserDTO({
+    this.idUser,
+    this.password,
+    this.nombre,
+    this.apellido,
+    this.telefono,
+    this.habilitado});
+
+  UserDTO.fromJson(Map<String, dynamic> json) {
+    idUser = json['id_user'];
+    password = json['password'];
+    nombre = json['nombre'];
+    apellido = json['apellido'];
+    telefono = json['telefono'];
+    habilitado = json['habilitado'];
+
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_user'] = this.idUser;
+    data['password'] = this.password;
+    data['nombre'] = this.nombre;
+    data['apellido'] = this.apellido;
+    data['telefono'] = this.telefono;
+    data['habilitado'] = this.habilitado;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return idUser;
   }
 }
