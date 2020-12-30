@@ -1,11 +1,12 @@
 
 
 import 'package:ag/helper/sharedPreferencesHelper.dart';
-import 'package:ag/services/authenticationService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/authenticationProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget{
@@ -20,15 +21,14 @@ class _LoginState extends State<Login>{
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   final email = TextEditingController();
   final clave = TextEditingController();
-  final authenticationService = new AuthenticationServices();
-
   void authenticate(BuildContext ctx ) async{
       final UserDTO user = new UserDTO(
         idUser: email.text,
         password: clave.text
       );
 
-      UserDTO resp = await authenticationService.login(user);
+      UserDTO resp;
+      Provider.of<AuthenticationProvider>(context).login(user).then((value) => resp = value);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       if(resp.idUser == ""){
         await prefs.setBool(SH_IS_LOGGED, false);

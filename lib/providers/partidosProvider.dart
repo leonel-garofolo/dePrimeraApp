@@ -1,10 +1,11 @@
 import 'dart:convert';
 
-import 'package:ag/services/http/api.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/network/http/api.dart';
+import 'package:ag/network/model/dtos.dart';
+import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/partidos";
-class PartidosServices extends API{
+class PartidosProvider extends API with ChangeNotifier  {
 
   Future<List<PartidoDTO>> getAll() async{
     try{

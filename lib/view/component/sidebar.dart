@@ -1,13 +1,6 @@
-import 'package:ag/helper/sharedPreferencesHelper.dart';
-import 'package:ag/services/authenticationService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
-import 'package:ag/view/configuration.dart';
-import 'package:ag/view/authentication/login.dart';
-import 'package:ag/view/notification.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Menu {
   Icon icon;

@@ -1,8 +1,9 @@
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LigasActivity extends StatefulWidget {
   LigasActivity({Key key}) : super(key: key);
@@ -12,7 +13,6 @@ class LigasActivity extends StatefulWidget {
 }
 
 class LigasActivityState extends State<LigasActivity> {
-  final LigasServices ligasServices= new LigasServices();
   @override
   void initState() {
     super.initState();
@@ -21,7 +21,7 @@ class LigasActivityState extends State<LigasActivity> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<LigaDTO>>(
-       future: ligasServices.getAll(),
+       future:  Provider.of<LigaProvider>(context).getAll(),
        builder: (BuildContext context, AsyncSnapshot<List<LigaDTO>>  snapshot) {
 
       Widget list = Container(
@@ -88,7 +88,6 @@ class LigasForm extends StatefulWidget {
 }
 
 class LigasFormState extends State<LigasForm>{
-  final LigasServices ligasServices = new LigasServices();
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
@@ -182,7 +181,7 @@ class LigasFormState extends State<LigasForm>{
     ligaDTO.mailContacto = mailContacto.text;
     ligaDTO.telefono = telefono.text;
     ligaDTO.telefonoContacto = telefonoContacto.text;
-    print(await ligasServices.save(ligaDTO));
+    print(Provider.of<LigaProvider>(context).save(ligaDTO));
     Navigator.pop(context);
   }
 }

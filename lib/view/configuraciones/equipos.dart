@@ -1,11 +1,12 @@
-import 'package:ag/services/equiposService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/equiposProvider.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldCheckBox.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EquiposActivity extends StatefulWidget {
   EquiposActivity({Key key}) : super(key: key);
@@ -15,8 +16,6 @@ class EquiposActivity extends StatefulWidget {
 }
 
 class EquiposActivityState extends State<EquiposActivity> {
-  final EquiposServices equiposServices= new EquiposServices();
-  final LigasServices ligasServices= new LigasServices();
   List<EquipoDTO> equipos;
   List<LigaDTO> ligas;
 
@@ -26,8 +25,9 @@ class EquiposActivityState extends State<EquiposActivity> {
   }
 
    loadEquipos() async{
-     ligas = await ligasServices.getAll();
-     final List<EquipoDTO> tempEquipos = await equiposServices.getAll();
+     Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
+     List<EquipoDTO> tempEquipos;
+     Provider.of<EquiposProvider>(context).getAll().then((value) => tempEquipos = value);
      for(EquipoDTO equipo in tempEquipos){
        for(LigaDTO liga in ligas){
          if(equipo.idLiga == liga.idLiga){
@@ -105,7 +105,6 @@ class EquiposForm extends StatefulWidget {
 }
 
 class EquiposFormState extends State<EquiposForm>{
-  final EquiposServices equiposServices = new EquiposServices();
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
@@ -186,7 +185,8 @@ class EquiposFormState extends State<EquiposForm>{
     equipoDTO.nombre = nombre.text;
     equipoDTO.idLiga = ligaValue.idLiga;
     equipoDTO.habilitado = habilitado;
-    print(await equiposServices.save(equipoDTO));
+
+    Provider.of<EquiposProvider>(context).save(equipoDTO).then((value) => print(value));
     Navigator.pop(context);
   }
 }

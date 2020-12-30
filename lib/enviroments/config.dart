@@ -1,8 +1,22 @@
 import 'dart:async';
 
 import 'package:ag/main_common.dart';
+import 'package:ag/providers/PersonasProvider.dart';
+import 'package:ag/providers/appGruposProvider.dart';
+import 'package:ag/providers/arbitrosProvider.dart';
+import 'package:ag/providers/asistentesProvider.dart';
+import 'package:ag/providers/authenticationProvider.dart';
+import 'package:ag/providers/campeonatosProvider.dart';
+import 'package:ag/providers/equiposProvider.dart';
+import 'package:ag/providers/jugadoresProvider.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/providers/menuProvider.dart';
+import 'package:ag/providers/notificacionesProvider.dart';
+import 'package:ag/providers/partidosProvider.dart';
+import 'package:ag/providers/userProvider.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class Config {
   static Config value;
@@ -26,7 +40,24 @@ class Config {
     // Pass all uncaught errors to Crashlytics.
     FlutterError.onError = Crashlytics.instance.recordFlutterError;
     runZoned(() {
-      runApp(DePrimeraApp(this));
+      runApp(MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => AppGruposProvider()),
+          ChangeNotifierProvider(create: (_) => ArbitrosProvider()),
+          ChangeNotifierProvider(create: (_) => AsistentesProvider()),
+          ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
+          ChangeNotifierProvider(create: (_) => CampeonatosProvider()),
+          ChangeNotifierProvider(create: (_) => EquiposProvider()),
+          ChangeNotifierProvider(create: (_) => JugadoresProvider()),
+          ChangeNotifierProvider(create: (_) => LigaProvider()),
+          ChangeNotifierProvider(create: (_) => MenuProvider()),
+          ChangeNotifierProvider(create: (_) => NotificacionesProvider()),
+          ChangeNotifierProvider(create: (_) => PartidosProvider()),
+          ChangeNotifierProvider(create: (_) => PersonasProvider()),
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+        ],
+        child: DePrimeraApp(this),
+      ));
     }, onError: Crashlytics.instance.recordError);
   }
 

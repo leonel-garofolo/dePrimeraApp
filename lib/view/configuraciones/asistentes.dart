@@ -1,11 +1,12 @@
-import 'package:ag/services/asistentesService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
-import 'package:ag/services/personasService.dart';
+import 'package:ag/providers/PersonasProvider.dart';
+import 'package:ag/providers/asistentesProvider.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class AsistentesActivity extends StatefulWidget {
@@ -16,9 +17,6 @@ class AsistentesActivity extends StatefulWidget {
 }
 
 class AsistentesActivityState extends State<AsistentesActivity> {
-  final AsistentesServices asistentesServices= new AsistentesServices();
-  final PersonasServices personasServices= new PersonasServices();
-  final LigasServices ligasServices= new LigasServices();
   List<LigaDTO> ligas;
   List<AsistenteDTO> asistentes;
   List<PersonaDTO> personas;
@@ -29,9 +27,11 @@ class AsistentesActivityState extends State<AsistentesActivity> {
   }
 
   loadAsistentes() async{
-    ligas = await ligasServices.getAll();
-    personas = await personasServices.getAll();
-    final List<AsistenteDTO> tempAsistentes = await asistentesServices.getAll();
+
+    Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
+    Provider.of<PersonasProvider>(context).getAll().then((value) => personas = value);
+    List<AsistenteDTO> tempAsistentes;
+    Provider.of<AsistentesProvider>(context).getAll().then((value) => tempAsistentes = value);
     for(AsistenteDTO asistente in tempAsistentes){
       for(PersonaDTO persona in personas){
         if(asistente.idPersona == persona.idPersona){
@@ -116,8 +116,6 @@ class AsistentesForm extends StatefulWidget {
 }
 
 class AsistentesFormState extends State<AsistentesForm>{
-  final AsistentesServices asistentesServices = new AsistentesServices();
-  final PersonasServices personasServices = new PersonasServices();
   final _formKey = GlobalKey<FormState>();
 
   LigaDTO ligaValue;
@@ -228,10 +226,12 @@ class AsistentesFormState extends State<AsistentesForm>{
       asistenteDTO.idAsistente = this.widget.asistenteDTO.idAsistente;
     }
 
-    final String id = await personasServices.save(personaDTO);
+    String id;
+    Provider.of<PersonasProvider>(context).save(personaDTO).then((value) => id = value);
     asistenteDTO.idPersona = int.parse(id);
     print(id);
-    print(await asistentesServices.save(asistenteDTO));
+
+    Provider.of<AsistentesProvider>(context).save(asistenteDTO).then((value) => print(value));
     Navigator.pop(context);
   }
 }

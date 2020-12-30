@@ -1,11 +1,12 @@
-import 'package:ag/services/campeonatosService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/campeonatosProvider.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldDatePicker.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CampeonatosActivity extends StatefulWidget {
   CampeonatosActivity({Key key}) : super(key: key);
@@ -15,8 +16,6 @@ class CampeonatosActivity extends StatefulWidget {
 }
 
 class CampeonatosActivityState extends State<CampeonatosActivity> {
-  final CampeonatosServices campeonatosServices= new CampeonatosServices();
-  final LigasServices ligasServices= new LigasServices();
   List<CampeonatoDTO> campeonatos;
   List<LigaDTO> ligas;
 
@@ -26,8 +25,10 @@ class CampeonatosActivityState extends State<CampeonatosActivity> {
   }
 
   loadCampeonatos() async{
-    ligas = await ligasServices.getAll();
-    final List<CampeonatoDTO> tempCampeonatos = await campeonatosServices.getAll();
+    Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
+
+    List<CampeonatoDTO> tempCampeonatos;
+    Provider.of<CampeonatosProvider>(context).getAll().then((value) => tempCampeonatos = value);
     for(CampeonatoDTO campeonato in tempCampeonatos){
       for(LigaDTO liga in ligas){
         if(campeonato.idLiga == liga.idLiga){
@@ -105,7 +106,6 @@ class CampeonatosForm extends StatefulWidget {
 }
 
 class CampeonatosFormState extends State<CampeonatosForm>{
-  final CampeonatosServices campeonatosServices = new CampeonatosServices();
   final _formKey = GlobalKey<FormState>();
 
   final descripcion = TextEditingController();
@@ -198,7 +198,8 @@ class CampeonatosFormState extends State<CampeonatosForm>{
     campeonatoDTO.idLiga = ligaValue.idLiga;
     campeonatoDTO.fechaInicio = fechaInicio;
     campeonatoDTO.fechaFin = fechaFin;
-    print(await campeonatosServices.save(campeonatoDTO));
+
+    Provider.of<CampeonatosProvider>(context).save(campeonatoDTO).then((value) => print(value));
     Navigator.pop(context);
   }
 }

@@ -5,20 +5,28 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:js';
+
 import 'package:ag/enviroments/desa.dart';
 import 'package:ag/enviroments/test.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
 void main() {
+
   test('Counter value should be incremented', () async {
     new Test();
-    LigasServices ligasServices = new LigasServices();
-    List<LigaDTO> ligas = await ligasServices.getAll();
+    /*
+    List<LigaDTO> ligas ;
+    Provider.of<LigaProvider>(context).getAll().then((value) => ligas);
     print(ligas.toString());
 
-    LigaDTO liga = await ligasServices.get(ligas[0].idLiga);
+    LigaDTO liga;
+    Provider.of<LigaProvider>(context).get(ligas[0].idLiga).then((value) => liga = value);
+
     print(liga.nombre);
 
     LigaDTO newLiga = new LigaDTO();
@@ -29,6 +37,8 @@ void main() {
 
     resp = await ligasServices.delete(ligas[ligas.length -1].idLiga);
     print(resp);
+
+     */
   });
 }
 

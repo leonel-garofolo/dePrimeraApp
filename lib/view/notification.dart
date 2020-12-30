@@ -1,10 +1,11 @@
-import 'package:ag/services/appGruposService.dart';
-import 'package:ag/services/notificacionesService.dart';
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/providers/appGruposProvider.dart';
+import 'package:ag/providers/notificacionesProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NotificationMessages extends StatefulWidget {
   NotificationMessages({Key key}) : super(key: key);
@@ -14,8 +15,6 @@ class NotificationMessages extends StatefulWidget {
 }
 
 class NotificationMessagesState extends State<NotificationMessages> {
-  final notificacionesServices = new NotificacionesServices();
-  final appGruposServices = new AppGruposServices();
   List<NotificacionDTO> notificaciones;
   List<AppGruposDTO> appGrupos;
   @override
@@ -24,8 +23,8 @@ class NotificationMessagesState extends State<NotificationMessages> {
   }
 
   loadNotificaciones() async{
-    notificaciones = await notificacionesServices.getAll();
-    appGrupos = await appGruposServices.getAll();
+    Provider.of<NotificacionesProvider>(context).getAll().then((value) => notificaciones = value);
+    Provider.of<AppGruposProvider>(context).getAll().then((value) => appGrupos = value);
     for(AppGruposDTO appGruposDTO in appGrupos){
       for(NotificacionDTO notificacionDTO in notificaciones){
         if(appGruposDTO.idAppGrupos == notificacionDTO.idGrupo){
@@ -110,8 +109,6 @@ class NotificacionesForm extends StatefulWidget {
 
 class NotificacionesFormState extends State<NotificacionesForm>{
   final _formKey = GlobalKey<FormState>();
-  final NotificacionesServices notificacionesServices = new NotificacionesServices();
-
   final titulo = TextEditingController();
   final texto = TextEditingController();
   AppGruposDTO appGrupoValue;
@@ -183,7 +180,7 @@ class NotificacionesFormState extends State<NotificacionesForm>{
     notificacionDTO.titulo = titulo.text;
     notificacionDTO.texto = texto.text;
     notificacionDTO.idGrupo = appGrupoValue.idAppGrupos;
-    await notificacionesServices.save(notificacionDTO);
+    Provider.of<NotificacionesProvider>(context).save(notificacionDTO).then((value) => print(value));
     Navigator.pop(context);
   }
 }

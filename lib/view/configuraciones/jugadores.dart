@@ -1,11 +1,12 @@
-import 'package:ag/services/jugadoresService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
-import 'package:ag/services/personasService.dart';
+import 'package:ag/providers/PersonasProvider.dart';
+import 'package:ag/providers/jugadoresProvider.dart';
+import 'package:ag/providers/ligaProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 
 class JugadoresActivity extends StatefulWidget {
@@ -16,9 +17,6 @@ class JugadoresActivity extends StatefulWidget {
 }
 
 class JugadoresActivityState extends State<JugadoresActivity> {
-  final JugadoresServices jugadoresServices= new JugadoresServices();
-  final PersonasServices personasServices= new PersonasServices();
-  final LigasServices ligasServices= new LigasServices();
   List<LigaDTO> ligas;
   List<JugadorDTO> jugadores;
   List<PersonaDTO> personas;
@@ -29,9 +27,10 @@ class JugadoresActivityState extends State<JugadoresActivity> {
   }
 
   loadJugadores() async{
-    ligas = await ligasServices.getAll();
-    personas = await personasServices.getAll();
-    final List<JugadorDTO> tempJugadores = await jugadoresServices.getAll();
+    Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
+    Provider.of<PersonasProvider>(context).getAll().then((value) => personas = value);
+    List<JugadorDTO> tempJugadores;
+    Provider.of<JugadoresProvider>(context).getAll().then((value) => tempJugadores = value);
     for(JugadorDTO jugador in tempJugadores){
       for(PersonaDTO persona in personas){
         if(jugador.idPersona == persona.idPersona){
@@ -122,8 +121,6 @@ class JugadoresForm extends StatefulWidget {
 }
 
 class JugadoresFormState extends State<JugadoresForm>{
-  final JugadoresServices jugadoresServices = new JugadoresServices();
-  final PersonasServices personasServices = new PersonasServices();
   final _formKey = GlobalKey<FormState>();
 
   LigaDTO ligaValue;
@@ -234,10 +231,12 @@ class JugadoresFormState extends State<JugadoresForm>{
       jugadorDTO.idJugador = this.widget.jugadorDTO.idJugador;
     }
 
-    final String id = await personasServices.save(personaDTO);
+    String id;
+    Provider.of<PersonasProvider>(context).save(personaDTO).then((value) => id = value);
+
     jugadorDTO.idPersona = int.parse(id);
     print(id);
-    print(await jugadoresServices.save(jugadorDTO));
+    Provider.of<JugadoresProvider>(context).save(jugadorDTO).then((value) => print(value));
     Navigator.pop(context);
   }
 }

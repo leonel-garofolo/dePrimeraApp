@@ -1,4 +1,4 @@
-import 'package:ag/services/model/dtos.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

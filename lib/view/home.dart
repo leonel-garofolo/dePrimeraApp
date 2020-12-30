@@ -1,18 +1,16 @@
 import 'package:ag/helper/sharedPreferencesHelper.dart';
-import 'package:ag/services/authenticationService.dart';
-import 'package:ag/services/campeonatosService.dart';
-import 'package:ag/services/ligasService.dart';
-import 'package:ag/services/model/dtos.dart';
-import 'package:ag/services/partidosService.dart';
+import 'package:ag/providers/authenticationProvider.dart';
+import 'package:ag/providers/campeonatosProvider.dart';
+import 'package:ag/providers/partidosProvider.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/authentication/login.dart';
 import 'package:ag/view/component/cardGame.dart';
 import 'package:ag/view/component/sidebar.dart';
 import 'package:ag/view/configuration.dart';
-import 'package:ag/view/eventDetail.dart';
 import 'package:ag/view/notification.dart';
-import 'package:event_bus/event_bus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //EventBus eventBus = EventBus();
@@ -27,11 +25,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Choice _selectedChoice = itemsMenuChoices[0]; // The app's "state".
   TabController _tabController;
   GlobalKey<ScaffoldState> _scaffoldKey;
-
-  final partidosServices = new PartidosServices();
-  final campeonatosServices = new CampeonatosServices();
-  final ligasServices = new LigasServices();
-  final authenticationService = new AuthenticationServices();
 
   int screenType;
   String title;
@@ -135,10 +128,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
           ),
 
-          drawer: FutureBuilder<List<Widget>>(
-            future: loadData(context),
-            builder: (BuildContext context, AsyncSnapshot<List<Widget>> asyncSnapshot){
-              return NavDrawer(asyncSnapshot.data);
+          drawer: FutureBuilder<List<CampeonatoDTO>>(
+            future: Provider.of<CampeonatosProvider>(context).getAll(),
+            builder: (BuildContext context, AsyncSnapshot<List<CampeonatoDTO>> asyncSnapshot){
+              List<Widget> widgets;
+              if(asyncSnapshot.hasData) {
+                widgets = loadData(context, asyncSnapshot.data) ;
+                return NavDrawer(widgets);
+              } else {
+                return NavDrawer(widgets);
+              }
             },
           ),
         )
@@ -153,7 +152,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     return Center(
       child: FutureBuilder<List<PartidosFromDateDTO>>(
-          future: partidosServices.getForDate(sCurrentDate),
+          future: Provider.of<PartidosProvider>(context).getForDate(sCurrentDate),
           builder: (BuildContext context, AsyncSnapshot<List<PartidosFromDateDTO>>  snapshot){
             if(snapshot.hasData){
               List<PartidosFromDateDTO> partidos = snapshot.data;
@@ -184,7 +183,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   loadFixture(){
     return Center(
       child: FutureBuilder<List<PartidosFromDateDTO>>(
-          future: campeonatosServices.getFixture(campeonatoSelected),
+          future: Provider.of<CampeonatosProvider>(context).getFixture(campeonatoSelected),
           builder: (BuildContext context, AsyncSnapshot<List<PartidosFromDateDTO>> snapshot){
             if(snapshot.hasData){
               List<PartidosFromDateDTO> partidos = snapshot.data;
@@ -216,14 +215,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Container(
       alignment: Alignment.topCenter,
       child: FutureBuilder<List<EquipoTablePosDTO>>(
-          future: campeonatosServices.getTablePosition(campeonatoSelected),
+          future: Provider.of<CampeonatosProvider>(context).getTablePosition(campeonatoSelected),
           builder: (BuildContext context, AsyncSnapshot<List<EquipoTablePosDTO>> snapshot){
             if(snapshot.hasData){
               List<EquipoTablePosDTO> equipos = snapshot.data;
               List<DataRow> dataRows = new List<DataRow>();
               equipos.forEach((equipo) {
                 List<DataCell> dataCells = new List<DataCell>();
-                dataCells.add(new DataCell(Text(equipo.nombre)));
+               dataCells.add(new DataCell(
+                    Container(
+                        width: 130, //SET width
+                        child: Text(equipo.nombre)
+                    )
+                  )
+                );
+
                 dataCells.add(new DataCell(Text(equipo.puntos.toString())));
                 dataCells.add(new DataCell(Text(equipo.partidosGanados.toString())));
                 dataCells.add(new DataCell(Text(equipo.partidosEmpatados.toString())));
@@ -241,24 +247,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text(
                       'Pts',
                       style: TextStyle(fontStyle: FontStyle.italic),
                     ),
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text(
                       'PG',
                       style: TextStyle(fontStyle: FontStyle.italic),
                     ),
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text(
                       'PE',
                       style: TextStyle(fontStyle: FontStyle.italic),
                     ),
                   ),
                   DataColumn(
+                    numeric: true,
                     label: Text(
                       'PP',
                       style: TextStyle(fontStyle: FontStyle.italic),
@@ -281,15 +291,29 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Container(
       alignment: Alignment.topCenter,
       child: FutureBuilder<List<SancionesJugadoresFromCampeonatoDTO>>(
-          future: campeonatosServices.getTableSanciones(campeonatoSelected),
+          future: Provider.of<CampeonatosProvider>(context).getTableSanciones(campeonatoSelected),
           builder: (BuildContext context, AsyncSnapshot<List<SancionesJugadoresFromCampeonatoDTO>> snapshot){
             if(snapshot.hasData){
               List<SancionesJugadoresFromCampeonatoDTO> sanciones = snapshot.data;
               List<DataRow> dataRows = new List<DataRow>();
               sanciones.forEach((sancion) {
                 List<DataCell> dataCells = new List<DataCell>();
-                dataCells.add(new DataCell(Text(sancion.apellidoNombre + " (" + sancion.eNombre + ")")));
-                dataCells.add(new DataCell(Text(sancion.cRojas.toString())));
+                dataCells.add(new DataCell(
+                    Container(
+                        width: 50, //SET width
+                        child: Text(sancion.apellidoNombre + " (" + sancion.eNombre + ")")
+                    )
+                )
+                );
+
+                dataCells.add(new DataCell(
+                    Container(
+                        width: 10, //SET width
+                        child: Text(sancion.cRojas.toString())
+                    )
+
+                  )
+                );
                 dataCells.add(new DataCell(Text(sancion.cAmarillas.toString())));
                 dataCells.add(new DataCell(Text(sancion.cAzules.toString())));
 
@@ -305,18 +329,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     DataColumn(
+                      numeric: true,
                       label: Text(
                         'Rojas',
                         style: TextStyle(fontStyle: FontStyle.italic),
                       ),
                     ),
                     DataColumn(
+                      numeric: true,
                       label: Text(
                         'Amarillas',
                         style: TextStyle(fontStyle: FontStyle.italic),
                       ),
                     ),
                     DataColumn(
+                      numeric: true,
                       label: Text(
                         'Azules',
                         style: TextStyle(fontStyle: FontStyle.italic),
@@ -335,9 +362,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 
-  Future<List<Widget>> loadData(BuildContext context) async {
+  List<Widget> loadData(BuildContext context, List<CampeonatoDTO> campeonatosDTO)  {
     List<Menu> menus = new List<Menu>();
-    List<CampeonatoDTO> campeonatosDTO = await campeonatosServices.getAll();
     campeonatosDTO.forEach((camp) {
       menus.add(new Menu(
           nombre: camp.descripcion,
@@ -500,12 +526,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             idUser: sh.getString(SH_USER_ID),
             password: "123456"
         );
-        authenticationService.logout(dto);
-        sh.setBool(SH_IS_LOGGED, false);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Login()),
-        );
+
+        Provider.of<AuthenticationProvider>(context).logout(dto).then((value) {
+           sh.setBool(SH_IS_LOGGED, false);
+            Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Login()),
+          );
+        });
         break;
     }
   }
