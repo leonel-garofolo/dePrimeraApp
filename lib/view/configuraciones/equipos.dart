@@ -1,9 +1,9 @@
-import 'package:ag/providers/equiposProvider.dart';
-import 'package:ag/providers/ligaProvider.dart';
 import 'package:ag/network/model/dtos.dart';
+import 'package:ag/providers/equiposProvider.dart';
+import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldCheckBox.dart';
-import 'package:ag/view/component/fieldComboBox.dart';
-import 'package:ag/view/component/fieldView.dart';
+import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,67 +16,49 @@ class EquiposActivity extends StatefulWidget {
 }
 
 class EquiposActivityState extends State<EquiposActivity> {
-  List<EquipoDTO> equipos;
   List<LigaDTO> ligas;
-
   @override
   void initState() {
     super.initState();
-  }
-
-   loadEquipos() async{
-     Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
-     List<EquipoDTO> tempEquipos;
-     Provider.of<EquiposProvider>(context).getAll().then((value) => tempEquipos = value);
-     for(EquipoDTO equipo in tempEquipos){
-       for(LigaDTO liga in ligas){
-         if(equipo.idLiga == liga.idLiga){
-           equipo.ligaDTO = liga;
-           break;
-         }
-       }
-     }
-     equipos = tempEquipos;
+    Provider.of<EquiposProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-        future: loadEquipos(),
-        builder: (BuildContext context, AsyncSnapshot<void>  snapshot) {
-          Widget list = Container(
-            child: Text("cargando"),
-          );
+    List<EquipoDTO> equipos = Provider.of<EquiposProvider>(context).getEquipos();
 
-          if(equipos != null && equipos.isNotEmpty){
-            list= ListView.separated(
-              padding: const EdgeInsets.all(8),
-              itemCount: equipos.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: Center(child: Text('${equipos[index].nombre}')),
-                  subtitle: Center(child: Text('${equipos[index].ligaDTO.nombre}')),
-                  onTap: () => editEntity(context, equipos[index]),
-                );
-              },
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
+    Widget list = CircularProgress();
+    if(equipos != null){
+      if(equipos.isNotEmpty){
+        list= ListView.separated(
+          padding: const EdgeInsets.all(8),
+          itemCount: equipos.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              title: Center(child: Text('${equipos[index].nombre}')),
+              onTap: () => editEntity(context, equipos[index]),
             );
-          }
+          },
+          separatorBuilder: (BuildContext context, int index) => const Divider(),
+        );
+      } else {
+        list = WithoutData();
+      }
+    }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Equipos'),
-            ),
-            body: list,
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                newEntity(context);
-              },
-              child: Icon(Icons.add),
-              backgroundColor: Colors.lightBlueAccent,
-            ),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Equipos'),
+      ),
+      body: list,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          newEntity(context);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.lightBlueAccent,
+      ),
+    );
   }
 
   editEntity(final BuildContext context, EquipoDTO equipoDTO){
@@ -108,7 +90,6 @@ class EquiposFormState extends State<EquiposForm>{
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
-  LigaDTO ligaValue;
   bool habilitado = false;
   final foto = TextEditingController();
 
@@ -116,8 +97,6 @@ class EquiposFormState extends State<EquiposForm>{
   Widget build(BuildContext context) {
     if(this.widget.equipoDTO != null){
       nombre.text = this.widget.equipoDTO.nombre;
-      if(ligaValue == null)
-        ligaValue = this.widget.equipoDTO.ligaDTO;
       habilitado = this.widget.equipoDTO.habilitado;
       //foto.text = this.widget.equipoDTO.foto;
     }
@@ -137,12 +116,6 @@ class EquiposFormState extends State<EquiposForm>{
               FieldText(
                 label: "Nombre",
                 controller: nombre,
-              ),
-              FieldComboBox<LigaDTO>(
-                label: "Liga",
-                itemValue: ligaValue,
-                itemList: widget.ligasDTO,
-                onChange: onChangeLiga,
               ),
               FieldCheckbox(
                 label: "Habilitado",
@@ -171,22 +144,18 @@ class EquiposFormState extends State<EquiposForm>{
     );
   }
 
-  void onChangeLiga(LigaDTO newLiga){
-    setState(() {
-      ligaValue = newLiga;
-    });
-  }
-
   save() async{
     final EquipoDTO equipoDTO = new EquipoDTO();
     if(this.widget.equipoDTO != null){
       equipoDTO.idEquipo = this.widget.equipoDTO.idEquipo;
     }
     equipoDTO.nombre = nombre.text;
-    equipoDTO.idLiga = ligaValue.idLiga;
     equipoDTO.habilitado = habilitado;
 
-    Provider.of<EquiposProvider>(context).save(equipoDTO).then((value) => print(value));
-    Navigator.pop(context);
+    Provider.of<EquiposProvider>(context, listen: false).save(equipoDTO).then((value) {
+      Provider.of<EquiposProvider>(context, listen: false).getAll();
+      Navigator.pop(context);
+    });
+
   }
 }

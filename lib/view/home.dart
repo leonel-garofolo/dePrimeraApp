@@ -1,13 +1,14 @@
 import 'package:ag/helper/sharedPreferencesHelper.dart';
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/providers/authenticationProvider.dart';
 import 'package:ag/providers/campeonatosProvider.dart';
 import 'package:ag/providers/partidosProvider.dart';
-import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/authentication/login.dart';
 import 'package:ag/view/component/cardGame.dart';
 import 'package:ag/view/component/sidebar.dart';
 import 'package:ag/view/configuration.dart';
 import 'package:ag/view/notification.dart';
+import 'package:ag/view/settings/yourOpinion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  Choice _selectedChoice = itemsMenuChoices[0]; // The app's "state".
   TabController _tabController;
   GlobalKey<ScaffoldState> _scaffoldKey;
 
@@ -42,37 +42,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     tabsName.add("Ayer");
     tabsName.add("Hoy");
     tabsName.add("Mañana");
+    Provider.of<CampeonatosProvider>(context, listen: false).getAll();
   }
 
   void _select(Choice choice) {
-    // Causes the app to rebuild with the new _selectedChoice.
-    setState(() {
-      _selectedChoice = choice;
-    });
-  }
-
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    switch(choice.id){
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => YourOpinion()), );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => YourOpinion()), );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => YourOpinion()), );
+        break;
+    }
   }
 
   @override
@@ -128,20 +118,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
           ),
 
-          drawer: FutureBuilder<List<CampeonatoDTO>>(
-            future: Provider.of<CampeonatosProvider>(context).getAll(),
-            builder: (BuildContext context, AsyncSnapshot<List<CampeonatoDTO>> asyncSnapshot){
-              List<Widget> widgets;
-              if(asyncSnapshot.hasData) {
-                widgets = loadData(context, asyncSnapshot.data) ;
-                return NavDrawer(widgets);
-              } else {
-                return NavDrawer(widgets);
-              }
-            },
+          drawer: loadData(context, Provider.of<CampeonatosProvider>(context).getCampeonatos()) ,
           ),
-        )
-    );
+        );
   }
 
   showGames(int day) {
@@ -362,113 +341,117 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 
-  List<Widget> loadData(BuildContext context, List<CampeonatoDTO> campeonatosDTO)  {
-    List<Menu> menus = new List<Menu>();
-    campeonatosDTO.forEach((camp) {
-      menus.add(new Menu(
-          nombre: camp.descripcion,
-          isSubMenu: true,
-          pathGo: "LIGA",
-          campeonatoDTO:camp
-      ));
-    });
-
+  Widget loadData(BuildContext context, List<CampeonatoDTO> campeonatosDTO)  {
     List<Widget> items = new List<Widget>();
-    items.add(Container(
-        decoration: BoxDecoration(
-          color: Colors.blue,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-                width: double.infinity,
-                height: 50),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'De Primera',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            ),
-          ],
-        )
-    ));
-    items.add(ListTile(
-      leading: Icon(Icons.calendar_today_outlined),
-      contentPadding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-      title: Align(
-        child: new Text("Encuentros"),
-        alignment: Alignment(-1.2, 0),
-      ),
-      onTap: () =>
-      {
-        openPath(context, "DAILY", null)
-      },
-    ));
-
-    items.add(
-        Container(
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.fromLTRB(20, 5, 0, 0),
-          child: Column(
-            children: [
-              Text("Mis Torneos"),
-            ],
-          ),
+    if(campeonatosDTO != null && campeonatosDTO.isEmpty){
+      return NavDrawer(items);
+    } else {
+      List<Menu> menus = new List<Menu>();
+      campeonatosDTO.forEach((camp) {
+        menus.add(new Menu(
+            nombre: camp.descripcion,
+            isSubMenu: true,
+            pathGo: "LIGA",
+            campeonatoDTO:camp
         ));
-    if (menus != null) {
-      menus.add(new Menu(
-          icon: Icon(Icons.settings),
-          nombre: "Configuraciones",
-          isSubMenu: false,
-          pathGo: "CONFIG"
+      });
+
+      items.add(Container(
+          decoration: BoxDecoration(
+            color: Colors.blue,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                  width: double.infinity,
+                  height: 50),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  'De Primera',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ],
+          )
       ));
-      menus.add(new Menu(
-          icon: Icon(Icons.border_color),
-          nombre: "Notificaciones",
-          isSubMenu: false,
-          pathGo: "NOTIFY"
-      ));
-      menus.add(new Menu(
-          icon: Icon(Icons.exit_to_app),
-          nombre: "Salir",
-          isSubMenu: false,
-          pathGo: "EXIT"
+      items.add(ListTile(
+        leading: Icon(Icons.calendar_today_outlined),
+        contentPadding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+        title: Align(
+          child: new Text("Encuentros"),
+          alignment: Alignment(-1.2, 0),
+        ),
+        onTap: () =>
+        {
+          openPath(context, "DAILY", null)
+        },
       ));
 
-      menus.forEach((menu) {
-        if (!menu.isSubMenu) {
-          //items.add(Divider(color:Colors.black));
-          items.add(ListTile(
-            leading: menu.icon,
-            contentPadding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-            title: Align(
-              child: new Text(menu.nombre),
-              alignment: Alignment(-1.2, 0),
+      items.add(
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.fromLTRB(20, 5, 0, 0),
+            child: Column(
+              children: [
+                Text("Mis Torneos"),
+              ],
             ),
-            onTap: () =>
-            {
-              openPath(context, menu.pathGo, null)
-            },
           ));
-        } else {
-          items.add(
-              Container(
-                padding: EdgeInsets.fromLTRB(40, 0, 0, 0),
-                child: ListTile(
-                  title: Text(menu.nombre),
-                  onTap: () =>
-                  {
-                    openPath(context, menu.pathGo, menu.campeonatoDTO)
-                  },
-                ),
-              )
-          );
-        }
-      });
+      if (menus != null) {
+        menus.add(new Menu(
+            icon: Icon(Icons.settings),
+            nombre: "Configuraciones",
+            isSubMenu: false,
+            pathGo: "CONFIG"
+        ));
+        menus.add(new Menu(
+            icon: Icon(Icons.border_color),
+            nombre: "Notificaciones",
+            isSubMenu: false,
+            pathGo: "NOTIFY"
+        ));
+        menus.add(new Menu(
+            icon: Icon(Icons.exit_to_app),
+            nombre: "Salir",
+            isSubMenu: false,
+            pathGo: "EXIT"
+        ));
+
+        menus.forEach((menu) {
+          if (!menu.isSubMenu) {
+            //items.add(Divider(color:Colors.black));
+            items.add(ListTile(
+              leading: menu.icon,
+              contentPadding: EdgeInsets.fromLTRB(10, 5, 0, 0),
+              title: Align(
+                child: new Text(menu.nombre),
+                alignment: Alignment(-1.2, 0),
+              ),
+              onTap: () =>
+              {
+                openPath(context, menu.pathGo, null)
+              },
+            ));
+          } else {
+            items.add(
+                Container(
+                  padding: EdgeInsets.fromLTRB(40, 0, 0, 0),
+                  child: ListTile(
+                    title: Text(menu.nombre),
+                    onTap: () =>
+                    {
+                      openPath(context, menu.pathGo, menu.campeonatoDTO)
+                    },
+                  ),
+                )
+            );
+          }
+        });
+      }
+      return NavDrawer(items);
     }
-    return items;
   }
 
   toggleDrawer() async {
@@ -540,16 +523,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 }
 
 class Choice {
-  const Choice({this.title, this.icon});
-
+  final int id;
   final String title;
   final IconData icon;
+  const Choice({this.id, this.title, this.icon});
 }
 
 const List<Choice> itemsMenuChoices = const <Choice>[
-  const Choice(title: 'Tu Opinion', icon: Icons.message),
-  const Choice(title: 'Mi perfil', icon: Icons.face),
-  const Choice(title: 'Preferencias', icon: Icons.settings),
+  const Choice(id:0, title: 'Tu Opinion', icon: Icons.message),
+  const Choice(id:1, title: 'Mi perfil', icon: Icons.face),
+  const Choice(id:2, title: 'Preferencias', icon: Icons.settings),
 ];
 
 

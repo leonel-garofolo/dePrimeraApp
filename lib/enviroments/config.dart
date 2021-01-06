@@ -7,12 +7,17 @@ import 'package:ag/providers/arbitrosProvider.dart';
 import 'package:ag/providers/asistentesProvider.dart';
 import 'package:ag/providers/authenticationProvider.dart';
 import 'package:ag/providers/campeonatosProvider.dart';
+import 'package:ag/providers/comentariosProvider.dart';
 import 'package:ag/providers/equiposProvider.dart';
 import 'package:ag/providers/jugadoresProvider.dart';
 import 'package:ag/providers/ligaProvider.dart';
 import 'package:ag/providers/menuProvider.dart';
 import 'package:ag/providers/notificacionesProvider.dart';
+import 'package:ag/providers/paisesProvider.dart';
 import 'package:ag/providers/partidosProvider.dart';
+import 'package:ag/providers/provinciasProvider.dart';
+import 'package:ag/providers/queryProvider.dart';
+import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/providers/userProvider.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/widgets.dart';
@@ -55,6 +60,11 @@ class Config {
           ChangeNotifierProvider(create: (_) => PartidosProvider()),
           ChangeNotifierProvider(create: (_) => PersonasProvider()),
           ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => PaisesProvider()),
+          ChangeNotifierProvider(create: (_) => ProvinciasProvider()),
+          ChangeNotifierProvider(create: (_) => QueryProvider()),
+          ChangeNotifierProvider(create: (_) => ComentariosProvider()),
+          ChangeNotifierProvider(create: (_) => SharePreferencesProvider()),
         ],
         child: DePrimeraApp(this),
       ));

@@ -11,27 +11,29 @@ class LigaProvider extends API with ChangeNotifier  {
 
   List<LigaDTO> ligas;
 
-  Future<List<LigaDTO>> getAll() async{
+  getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        List<LigaDTO> list = (json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList();
-        this.ligas = list;
-        return list;
+        setLigas((json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList());
       } on Exception catch(e){
         print(e);
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
   List<LigaDTO> getLigas(){
     return this.ligas;
   }
+
+  setLigas(List<LigaDTO> ligas){
+    this.ligas = ligas;
+    notifyListeners();
+  }
+
 
   Future<LigaDTO> get(int id) async{
     try{

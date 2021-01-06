@@ -83,7 +83,7 @@ class LigaDTO extends ItemValue{
   }
 }
 
-class CampeonatoDTO {
+class CampeonatoDTO extends ItemValue{
   int idCampeonato;
   int idLiga;
   LigaDTO ligaDTO;
@@ -119,24 +119,25 @@ class CampeonatoDTO {
     data['fecha_fin'] = this.fechaFin.toIso8601String().contains("Z") ? this.fechaFin.toIso8601String(): this.fechaFin.toIso8601String() + "Z";
     return data;
   }
+  @override
+  String toString() {
+    return this.descripcion;
+  }
 }
 
-class EquipoDTO {
+class EquipoDTO extends ItemValue{
   int idEquipo;
-  int idLiga;
-  LigaDTO ligaDTO;
   bool habilitado;
   String nombre;
   Null foto;
 
   EquipoDTO(
-      {this.idEquipo, this.idLiga, this.foto, this.habilitado, this.nombre});
+      {this.idEquipo, this.foto, this.habilitado, this.nombre});
 
   EquipoDTO.fromJson(Map<String, dynamic> json) {
     foto = json['foto'];
     habilitado = json['habilitado'];
     idEquipo = json['id_equipo'];
-    idLiga = json['id_liga'];
     nombre = json['nombre'];
   }
 
@@ -145,9 +146,13 @@ class EquipoDTO {
     data['foto'] = this.foto;
     data['habilitado'] = this.habilitado;
     data['id_equipo'] = this.idEquipo;
-    data['id_liga'] = this.idLiga;
     data['nombre'] = this.nombre;
     return data;
+  }
+
+  @override
+  String toString() {
+    return this.nombre;
   }
 }
 
@@ -340,15 +345,14 @@ class PartidosFromDateDTO {
 
 class PersonaDTO {
   int idPersona;
-
   String apellidoNombre;
   String domicilio;
   int edad;
-  int idLiga;
-  LigaDTO liga;
-  int idLocalidad;
+  String localidad;
   int idPais;
+  PaisDTO paisDTO;
   int idProvincia;
+  ProvinciaDTO provinciaDTO;
   int idTipoDoc;
   int nroDoc;
 
@@ -357,8 +361,7 @@ class PersonaDTO {
         this.apellidoNombre,
         this.domicilio,
         this.edad,
-        this.idLiga,
-        this.idLocalidad,
+        this.localidad,
         this.idPais,
         this.idProvincia,
         this.idTipoDoc,
@@ -368,8 +371,7 @@ class PersonaDTO {
     apellidoNombre = json['apellido_nombre'];
     domicilio = json['domicilio'];
     edad = json['edad'];
-    idLiga = json['id_liga'];
-    idLocalidad = json['id_localidad'];
+    localidad = json['localidad'];
     idPais = json['id_pais'];
     idPersona = json['id_persona'];
     idProvincia = json['id_provincia'];
@@ -382,10 +384,11 @@ class PersonaDTO {
     data['apellido_nombre'] = this.apellidoNombre;
     data['domicilio'] = this.domicilio;
     data['edad'] = this.edad;
-    data['id_liga'] = this.idLiga;
-    data['id_localidad'] = this.idLocalidad;
+    data['localidad'] = this.localidad;
     data['id_pais'] = this.idPais;
-    data['id_persona'] = this.idPersona;
+    if(this.idPersona != null){
+      data['id_persona'] = this.idPersona;
+    }
     data['id_provincia'] = this.idProvincia;
     data['id_tipo_doc'] = this.idTipoDoc;
     data['nro_doc'] = this.nroDoc;
@@ -396,19 +399,25 @@ class PersonaDTO {
 class ArbitroDTO {
   int idArbitro;
   int idPersona;
+  int idCampeonato;
   PersonaDTO personaDTO;
+  CampeonatoDTO campeonatoDTO;
 
-  ArbitroDTO({this.idArbitro, this.idPersona});
+  ArbitroDTO({this.idArbitro, this.idPersona, this.idCampeonato});
 
   ArbitroDTO.fromJson(Map<String, dynamic> json) {
     idArbitro = json['id_arbitro'];
     idPersona = json['id_persona'];
+    idCampeonato = json['id_campeonato'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id_arbitro'] = this.idArbitro;
+    if(this.idArbitro !=  null){
+      data['id_arbitro'] = this.idArbitro;
+    }
     data['id_persona'] = this.idPersona;
+    data['id_campeonato'] = this.idCampeonato;
     return data;
   }
 }
@@ -416,19 +425,25 @@ class ArbitroDTO {
 class AsistenteDTO {
   int idAsistente;
   int idPersona;
+  int idCampeonato;
   PersonaDTO personaDTO;
+  CampeonatoDTO campeonatoDTO;
 
-  AsistenteDTO({this.idAsistente, this.idPersona});
+  AsistenteDTO({this.idAsistente, this.idPersona, this.idCampeonato});
 
   AsistenteDTO.fromJson(Map<String, dynamic> json) {
     idAsistente = json['id_asistente'];
     idPersona = json['id_persona'];
+    idCampeonato = json['id_campeonato'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id_asistente'] = this.idAsistente;
+    if(this.idAsistente == null){
+      data['id_asistente'] = this.idAsistente;
+    }
     data['id_persona'] = this.idPersona;
+    data['id_campeonato'] = this.idCampeonato;
     return data;
   }
 }
@@ -437,18 +452,25 @@ class JugadorDTO {
   int idJugador;
   int idPersona;
   PersonaDTO personaDTO;
+  int idEquipo;
+  EquipoDTO equipoDTO;
 
-  JugadorDTO({this.idJugador, this.idPersona});
+  JugadorDTO({this.idJugador, this.idPersona, this.idEquipo});
 
   JugadorDTO.fromJson(Map<String, dynamic> json) {
     idJugador = json['id_jugador'];
     idPersona = json['id_persona'];
+    idEquipo = json['id_equipo'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id_jugador'] = this.idJugador;
+    if(this.idJugador != null){
+      data['id_jugador'] = this.idJugador;
+    }
+
     data['id_persona'] = this.idPersona;
+    data['id_equipo'] = this.idEquipo;
     return data;
   }
 }
@@ -544,5 +566,122 @@ class UserDTO extends ItemValue{
   @override
   String toString() {
     return idUser;
+  }
+}
+
+
+class PaisDTO extends ItemValue{
+  int idPais;
+  String nombre;
+
+  PaisDTO({
+    this.idPais,
+    this.nombre});
+
+  PaisDTO.fromJson(Map<String, dynamic> json) {
+    idPais = json['id_pais'];
+    nombre = json['nombre'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_pais'] = this.idPais;
+    data['nombre'] = this.nombre;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return nombre;
+  }
+}
+
+class ProvinciaDTO extends ItemValue{
+  int idProvincia;
+  int idPais;
+  String nombre;
+
+  ProvinciaDTO({
+    this.idProvincia,
+    this.idPais,
+    this.nombre});
+
+  ProvinciaDTO.fromJson(Map<String, dynamic> json) {
+    idProvincia = json['id_provincia'];
+    idPais = json['id_pais'];
+    nombre = json['nombre'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_provincia'] = this.idProvincia;
+    data['id_pais'] = this.idPais;
+    data['nombre'] = this.nombre;
+    return data;
+  }
+
+  @override
+  String toString() {
+    return nombre;
+  }
+}
+
+class QueryConfiguracionSize {
+  int ligas;
+  int campeonatos;
+  int equipos;
+  int arbitros;
+  int asistentes;
+  int jugadores;
+
+  QueryConfiguracionSize({
+    this.ligas,
+    this.campeonatos,
+    this.equipos,
+    this.arbitros,
+    this.asistentes,
+    this.jugadores
+  });
+
+  QueryConfiguracionSize.fromJson(Map<String, dynamic> json) {
+    ligas = json['ligas'];
+    campeonatos = json['campeonatos'];
+    equipos = json['equipos'];
+    arbitros = json['arbitros'];
+    asistentes = json['asistentes'];
+    jugadores = json['jugadores'];
+  }
+}
+
+class ComentariosDTO {
+  int idComentario;
+  String mail;
+  double puntaje;
+  String comentario;
+
+  ComentariosDTO({
+    this.idComentario,
+    this.mail,
+    this.puntaje,
+    this.comentario
+  });
+
+  ComentariosDTO.fromJson(Map<String, dynamic> json) {
+
+    idComentario = json['idComentario'];
+    mail = json['mail'];
+    puntaje = json['puntaje'];
+    comentario = json['comentario'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if(this.idComentario != null) {
+      data['id_comentario'] = this.idComentario;
+    }
+    data['mail'] = this.mail;
+    data['puntaje'] = this.puntaje;
+    data['comentario'] = this.comentario;
+    return data;
   }
 }

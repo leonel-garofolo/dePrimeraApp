@@ -7,22 +7,30 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/equipos";
 class EquiposProvider extends API with ChangeNotifier  {
-
-  Future<List<EquipoDTO>> getAll() async{
+  List<EquipoDTO> equipos;
+  getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList();
+        setEquipos((json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList());
       } on Exception catch(e){
-        print(e);
-        return null;
+        print(e);      
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
+
+  List<EquipoDTO> getEquipos(){
+    return this.equipos;
+  }
+
+  setEquipos(List<EquipoDTO> equipos){
+    this.equipos = equipos;
+    notifyListeners();
+  }
+
 
   Future<EquipoDTO> get(int id) async{
     try{

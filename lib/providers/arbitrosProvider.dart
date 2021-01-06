@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:ag/network/http/api.dart';
@@ -7,13 +6,14 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/arbitros";
 class ArbitrosProvider extends API with ChangeNotifier {
+  List<ArbitroDTO> arbitros;
 
-  Future<List<ArbitroDTO>> getAll() async{
+   getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => ArbitroDTO.fromJson(i)).toList();
+        setArbitros((json.decode(response.body) as List).map((i) => ArbitroDTO.fromJson(i)).toList());
       } on Exception catch(e){
         print(e);
         return null;
@@ -22,6 +22,15 @@ class ArbitrosProvider extends API with ChangeNotifier {
       print(e);
       return null;
     }
+  }
+
+  setArbitros(List<ArbitroDTO> arbitros){
+    this.arbitros = arbitros;
+    notifyListeners();
+  }
+
+  getArbitros(){
+    return this.arbitros;
   }
 
   Future<String> save(ArbitroDTO dto) async{

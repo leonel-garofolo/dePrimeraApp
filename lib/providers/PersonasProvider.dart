@@ -7,13 +7,13 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/personas";
 class PersonasProvider extends API with ChangeNotifier  {
-
-  Future<List<PersonaDTO>> getAll() async{
+  List<PersonaDTO> personas;
+  getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => PersonaDTO.fromJson(i)).toList();
+        setPersonas((json.decode(response.body) as List).map((i) => PersonaDTO.fromJson(i)).toList());
       } on Exception {
         return null;
       }
@@ -21,6 +21,15 @@ class PersonasProvider extends API with ChangeNotifier  {
       print(e);
       return null;
     }
+  }
+
+  setPersonas(List<PersonaDTO> personas){
+    this.personas = personas;
+    notifyListeners();
+  }
+
+  getPersonas(){
+    return this.personas;
   }
 
   Future<PersonaDTO> get(int id) async{

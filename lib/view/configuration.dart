@@ -1,4 +1,8 @@
+import 'package:ag/network/model/dtos.dart';
+import 'package:ag/providers/queryProvider.dart';
 import 'package:ag/view/component/cardMenu.dart';
+import 'package:ag/view/component/circularProgress.dart';
+import 'package:ag/view/component/withoutData.dart';
 import 'package:ag/view/configuraciones/arbitros.dart';
 import 'package:ag/view/configuraciones/asistentes.dart';
 import 'package:ag/view/configuraciones/campeonatos.dart';
@@ -7,6 +11,7 @@ import 'package:ag/view/configuraciones/jugadores.dart';
 import 'package:ag/view/configuraciones/ligas.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 const int T_LIGAS = 1;
 const int T_CAMPEONATOS = 2;
@@ -23,40 +28,71 @@ class Configuration extends StatefulWidget {
 }
 
 class _ConfigurationState extends State<Configuration> {
-  List<String> configuracionNombre;
   @override
   void initState() {
     super.initState();
-    configuracionNombre = new List<String>();
+    Provider.of<QueryProvider>(context, listen: false).callConfiguracionSize();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    QueryConfiguracionSize conf =  Provider.of<QueryProvider>(context).getQueryConfiguracion();
+    List<String> configuracionNombre = new List<String>();
     configuracionNombre.add("Ligas");
     configuracionNombre.add("Campeonatos");
     configuracionNombre.add("Equipos");
     configuracionNombre.add("Arbitros");
     configuracionNombre.add("Asistentes");
     configuracionNombre.add("Jugadores");
-  }
 
-  @override
-  Widget build(BuildContext context) {
+    Widget list = CircularProgress();
+    if(conf != null){
+      list = new ListView.builder(
+        itemCount: configuracionNombre.length,
+        itemBuilder: (context, index) {
+          int count = 0;
+          switch(index){
+            case 0:
+              count = conf.ligas;
+              break;
+            case 1:
+              count = conf.campeonatos;
+              break;
+            case 2:
+              count = conf.equipos;
+              break;
+            case 3:
+              count= conf.arbitros;
+              break;
+            case 4:
+              count= conf.asistentes;
+              break;
+            case 5:
+              count= conf.jugadores;
+              break;
+          }
+
+
+          return InkWell(
+            onTap: () {
+              goWindows(context, index +1);
+            },
+            child: CardMenu(
+                title: configuracionNombre[index],
+                count: count
+            ),
+          );
+        },
+      );
+    } else {
+      list = WithoutData();
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Configuraciones"),
       ),
-      body: new ListView.builder(
-          itemCount: configuracionNombre.length,
-          itemBuilder: (context, index) {
-             return InkWell(
-               onTap: () {
-                 goWindows(context, index +1);
-               },
-               child: CardMenu(
-                   title: configuracionNombre[index],
-                   count: 2
-               ),
-             );
-          },
-      ),
+      body: list,
     );
   }
 

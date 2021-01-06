@@ -1,6 +1,8 @@
 import 'package:ag/providers/ligaProvider.dart';
 import 'package:ag/network/model/dtos.dart';
-import 'package:ag/view/component/fieldView.dart';
+import 'package:ag/view/component/circularProgress.dart';
+import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,51 +18,45 @@ class LigasActivityState extends State<LigasActivity> {
   @override
   void initState() {
     super.initState();
+    Provider.of<LigaProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<LigaDTO>>(
-       future:  Provider.of<LigaProvider>(context).getAll(),
-       builder: (BuildContext context, AsyncSnapshot<List<LigaDTO>>  snapshot) {
-
-      Widget list = Container(
-        child: Text("cargando"),
-      );
-
-      if(snapshot.data != null && snapshot.data.isNotEmpty){
+    Widget list = CircularProgress();
+    List<LigaDTO> ligas = Provider.of<LigaProvider>(context).getLigas();
+    if(ligas != null){
+      if(ligas.isNotEmpty){
         list= ListView.separated(
           padding: const EdgeInsets.all(8),
-          itemCount: snapshot.data.length,
+          itemCount: ligas.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-              title: Center(child: Text('${snapshot.data[index].nombre}')),
-              subtitle: Center(child: Text('${snapshot.data[index].cuit}')),
-              onTap: () => editEntity(context, snapshot.data[index]),
+              title: Center(child: Text('${ligas[index].nombre}')),
+              subtitle: Center(child: Text('${ligas[index].cuit}')),
+              onTap: () => editEntity(context, ligas[index]),
             );
           },
           separatorBuilder: (BuildContext context, int index) => const Divider(),
         );
-      } else if(snapshot.data == null || (snapshot.data != null && snapshot.data.isEmpty)){
-        list = Container(
-          child: Text("Sin Datos"),
-        );
+      } else {
+        list = WithoutData();
       }
+    }
 
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Ligas'),
-        ),
-        body: list,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            newEntity(context);
-          },
-          child: Icon(Icons.add),
-          backgroundColor: Colors.lightBlueAccent,
-        ),
-      );
-    });
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ligas'),
+      ),
+      body: list,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          newEntity(context);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.lightBlueAccent,
+      ),
+    );
   }
 
   editEntity(final BuildContext context, LigaDTO ligaDTO){
@@ -181,7 +177,10 @@ class LigasFormState extends State<LigasForm>{
     ligaDTO.mailContacto = mailContacto.text;
     ligaDTO.telefono = telefono.text;
     ligaDTO.telefonoContacto = telefonoContacto.text;
-    print(Provider.of<LigaProvider>(context).save(ligaDTO));
-    Navigator.pop(context);
+    Provider.of<LigaProvider>(context, listen: false).save(ligaDTO).then((value) {
+      Provider.of<LigaProvider>(context, listen: false).getAll();
+      Navigator.pop(context);
+    });
+
   }
 }

@@ -1,9 +1,14 @@
+import 'package:ag/network/model/dtos.dart';
 import 'package:ag/providers/PersonasProvider.dart';
 import 'package:ag/providers/arbitrosProvider.dart';
-import 'package:ag/providers/ligaProvider.dart';
-import 'package:ag/network/model/dtos.dart';
+import 'package:ag/providers/campeonatosProvider.dart';
+import 'package:ag/providers/paisesProvider.dart';
+import 'package:ag/providers/provinciasProvider.dart';
+import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
-import 'package:ag/view/component/fieldView.dart';
+import 'package:ag/view/component/fieldNumber.dart';
+import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,50 +22,67 @@ class ArbitrosActivity extends StatefulWidget {
 }
 
 class ArbitrosActivityState extends State<ArbitrosActivity> {
-  List<LigaDTO> ligas;
-  List<ArbitroDTO> arbitros;
-  List<PersonaDTO> personas;
+  List<PaisDTO> paises;
+  List<ProvinciaDTO> provincias;
+  List<CampeonatoDTO> campeonatos;
 
   @override
   void initState() {
     super.initState();
-  }
-
-  loadArbitros() async{
-    Provider.of<LigaProvider>(context).getAll().then((value) => ligas = value);
-    Provider.of<PersonasProvider>(context).getAll().then((value) => personas = value);
-
-    List<ArbitroDTO> tempArbitros;
-    Provider.of<ArbitrosProvider>(context).getAll().then((value) => tempArbitros = value);
-    for(ArbitroDTO arbitro in tempArbitros){
-      for(PersonaDTO persona in personas){
-        if(arbitro.idPersona == persona.idPersona){
-          arbitro.personaDTO = persona;
-          break;
-        }
-      }
-
-      for(LigaDTO liga in ligas){
-        if(arbitro.personaDTO != null && arbitro.personaDTO.idLiga == liga.idLiga){
-          arbitro.personaDTO.idLiga = liga.idLiga;
-          arbitro.personaDTO.liga = liga;
-          break;
-        }
-      }
-    }
-    arbitros = tempArbitros;
+    Provider.of<PaisesProvider>(context, listen: false).getAll();
+    Provider.of<ProvinciasProvider>(context, listen: false).getAll();
+    Provider.of<CampeonatosProvider>(context, listen: false).getAll();
+    Provider.of<PersonasProvider>(context, listen: false).getAll();
+    Provider.of<ArbitrosProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-        future: loadArbitros(),
-        builder: (BuildContext context, AsyncSnapshot<void>  snapshot) {
-          Widget list = Container(
-            child: Text("cargando"),
-          );
+    paises = Provider.of<PaisesProvider>(context).getPaises();
+    provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
+    campeonatos = Provider.of<CampeonatosProvider>(context).getCampeonatos();
+    List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
+    List<ArbitroDTO> arbitros = Provider.of<ArbitrosProvider>(context).getArbitros();
 
-          if(arbitros != null && arbitros.isNotEmpty){
+    Widget list = CircularProgress();
+    if(arbitros != null){
+        if(arbitros.isNotEmpty) {
+          if(personas != null && personas.isNotEmpty) {
+            for (ArbitroDTO arbitro in arbitros) {
+              for (PersonaDTO persona in personas) {
+                if (arbitro.idPersona == persona.idPersona) {
+                  arbitro.personaDTO = persona;
+                  for(PaisDTO pais in paises){
+                    if(arbitro.personaDTO.idPais == pais.idPais){
+                      arbitro.personaDTO.paisDTO = pais;
+
+                      for(ProvinciaDTO prov in provincias){
+                        if(arbitro.personaDTO.idPais == prov.idPais &&
+                            arbitro.personaDTO.idProvincia == prov.idProvincia){
+                          arbitro.personaDTO.provinciaDTO = prov;
+                          break;
+                        }
+                      }
+
+                      break;
+                    }
+                  }
+                  break;
+                }
+              }
+            }
+
+            if(campeonatos != null && campeonatos.isNotEmpty) {
+              for (ArbitroDTO arbitro in arbitros) {
+                for (CampeonatoDTO campeonato in campeonatos) {
+                  if (arbitro.idCampeonato == campeonato.idCampeonato) {
+                    arbitro.campeonatoDTO = campeonato;
+                    break;
+                  }
+                }
+              }
+            }
+
             list= ListView.separated(
               padding: const EdgeInsets.all(8),
               itemCount: arbitros.length,
@@ -74,42 +96,59 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
               separatorBuilder: (BuildContext context, int index) => const Divider(),
             );
           }
+        } else {
+            list = WithoutData();
+          }
+      }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Arbitros'),
-            ),
-            body: list,
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                newEntity(context);
-              },
-              child: Icon(Icons.add),
-              backgroundColor: Colors.lightBlueAccent,
-            ),
-          );
-        });
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Arbitros'),
+      ),
+      body: list,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          newEntity(context);
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.lightBlueAccent,
+      ),
+    );
   }
 
   editEntity(final BuildContext context, ArbitroDTO arbitroDTO){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArbitrosForm(ligasDTO: ligas, arbitroDTO: arbitroDTO,)),
+      MaterialPageRoute(builder: (context) => ArbitrosForm(
+          paises: paises,
+          provincias: provincias,
+          campeonatosDTO: campeonatos,
+        arbitroDTO: arbitroDTO,
+      )),
     );
   }
 
   newEntity(final BuildContext context){
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ArbitrosForm(ligasDTO: ligas)),
+      MaterialPageRoute(builder: (context) => ArbitrosForm(
+          paises: paises,
+          provincias: provincias,
+          campeonatosDTO: campeonatos)),
     );
   }
 }
 
 class ArbitrosForm extends StatefulWidget {
-  ArbitrosForm({Key key, this.ligasDTO, this.arbitroDTO}) : super(key: key);
+  ArbitrosForm({Key key,
+    this.paises,
+    this.provincias,
+    this.campeonatosDTO,
+    this.arbitroDTO}) : super(key: key);
 
-  final List<LigaDTO> ligasDTO;
+  final List<PaisDTO> paises;
+  final List<ProvinciaDTO> provincias;
+  final List<CampeonatoDTO> campeonatosDTO;
   final ArbitroDTO arbitroDTO;
   @override
   ArbitrosFormState createState() => ArbitrosFormState();
@@ -118,18 +157,17 @@ class ArbitrosForm extends StatefulWidget {
 class ArbitrosFormState extends State<ArbitrosForm>{
   final _formKey = GlobalKey<FormState>();
 
-  LigaDTO ligaValue;
+  PaisDTO paisValue;
+  ProvinciaDTO provinciaValue;
+  CampeonatoDTO campeonatoValue;
 
   final apellidoNombre = TextEditingController();
   final domicilio = TextEditingController();
   final edad = TextEditingController();
   final idLiga = TextEditingController();
   final idLocalidad = TextEditingController();
-  final idPais = TextEditingController();
-  final idProvincia = TextEditingController();
   final idTipoDoc = TextEditingController();
   final nroDoc = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -137,14 +175,16 @@ class ArbitrosFormState extends State<ArbitrosForm>{
       apellidoNombre.text = this.widget.arbitroDTO.personaDTO.apellidoNombre;
       domicilio.text = this.widget.arbitroDTO.personaDTO.domicilio;
       edad.text = this.widget.arbitroDTO.personaDTO.edad.toString();
-      idLocalidad.text = this.widget.arbitroDTO.personaDTO.idLocalidad.toString();
-      idPais.text = this.widget.arbitroDTO.personaDTO.idPais.toString();
-      idProvincia.text = this.widget.arbitroDTO.personaDTO.idProvincia.toString();
+      idLocalidad.text = this.widget.arbitroDTO.personaDTO.localidad;
+      if(paisValue == null)
+        paisValue = this.widget.arbitroDTO.personaDTO.paisDTO;
+      if(provinciaValue== null)
+        provinciaValue = this.widget.arbitroDTO.personaDTO.provinciaDTO;
+
       idTipoDoc.text = this.widget.arbitroDTO.personaDTO.idTipoDoc.toString();
       nroDoc.text = this.widget.arbitroDTO.personaDTO.nroDoc.toString();
-
-      if(ligaValue == null)
-        ligaValue = this.widget.arbitroDTO.personaDTO.liga;
+      if(campeonatoValue == null)
+        campeonatoValue = this.widget.arbitroDTO.campeonatoDTO;
 
     }
 
@@ -164,27 +204,43 @@ class ArbitrosFormState extends State<ArbitrosForm>{
                 label: "Apellido y Nombre",
                 controller: apellidoNombre,
               ),
-              FieldComboBox<LigaDTO>(
-                label: "Liga",
-                itemValue: ligaValue,
-                itemList: widget.ligasDTO,
-                onChange: onChangeLiga,
+              FieldComboBox<PaisDTO>(
+                label: "Pais",
+                itemValue: paisValue,
+                itemList: widget.paises,
+                onChange: onChangePais,
+              ),
+              FieldComboBox<ProvinciaDTO>(
+                label: "Provincia",
+                itemValue: provinciaValue,
+                itemList: widget.provincias,
+                onChange: onChangeProvincia,
+              ),
+              FieldText(
+                label: "Localidad",
+                controller: idLocalidad,
               ),
               FieldText(
                 label: "Tipo Documento",
                 controller: idTipoDoc,
               ),
-              FieldText(
+              FieldNumber(
                 label: "Nro Documento",
                 controller: nroDoc,
               ),
-              FieldText(
+              FieldNumber(
                 label: "Edad",
                 controller: edad,
               ),
               FieldText(
                 label: "Domicilio",
                 controller: domicilio,
+              ),
+              FieldComboBox<CampeonatoDTO>(
+                label: "Campeonato",
+                itemValue: campeonatoValue,
+                itemList: widget.campeonatosDTO,
+                onChange: onChangeCampeonato,
               ),
               SizedBox(
                 width: double.infinity,
@@ -204,9 +260,21 @@ class ArbitrosFormState extends State<ArbitrosForm>{
     );
   }
 
-  void onChangeLiga(LigaDTO newLiga){
+  void onChangePais(PaisDTO newPais){
     setState(() {
-      ligaValue = newLiga;
+      paisValue = newPais;
+    });
+  }
+
+  void onChangeProvincia(ProvinciaDTO newProvincia){
+    setState(() {
+      provinciaValue = newProvincia;
+    });
+  }
+
+  void onChangeCampeonato(CampeonatoDTO newCampeonato){
+    setState(() {
+      campeonatoValue = newCampeonato;
     });
   }
 
@@ -214,23 +282,33 @@ class ArbitrosFormState extends State<ArbitrosForm>{
     final ArbitroDTO arbitroDTO = new ArbitroDTO();
     final PersonaDTO personaDTO = new PersonaDTO(
       apellidoNombre: apellidoNombre.text,
-      idLiga: ligaValue.idLiga,
       idTipoDoc: int.parse(idTipoDoc.text),
       nroDoc: int.parse(nroDoc.text),
       domicilio: domicilio.text,
       edad: int.parse(edad.text),
+      idPais: paisValue.idPais,
+      idProvincia: provinciaValue.idProvincia,
+      localidad: idLocalidad.text
     );
     
     if(this.widget.arbitroDTO != null){
-      personaDTO.idPersona = this.widget.arbitroDTO.idPersona;
-      arbitroDTO.idArbitro = this.widget.arbitroDTO.idArbitro;
+      if(this.widget.arbitroDTO.idPersona != null){
+        personaDTO.idPersona = this.widget.arbitroDTO.idPersona;
+      }
+      if(this.widget.arbitroDTO.idArbitro != null){
+        arbitroDTO.idArbitro = this.widget.arbitroDTO.idArbitro;
+      }
     }
     
-    String id;
-    Provider.of<PersonasProvider>(context).save(personaDTO).then((value) => id = value);
-    arbitroDTO.idPersona = int.parse(id);
-    print(id);
-    Provider.of<ArbitrosProvider>(context).save(arbitroDTO).then((value) => print(value));
-    Navigator.pop(context);
+    Provider.of<PersonasProvider>(context, listen: false).save(personaDTO).then((value){
+      arbitroDTO.idPersona = int.parse(value);
+      arbitroDTO.idCampeonato = campeonatoValue.idCampeonato;
+      Provider.of<ArbitrosProvider>(context, listen: false).save(arbitroDTO).then((value) {
+        print(value);
+        Provider.of<ArbitrosProvider>(context, listen: false).getAll();
+        Navigator.pop(context);
+      });
+
+    });
   }
 }
