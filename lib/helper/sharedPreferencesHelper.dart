@@ -2,7 +2,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 const SH_IS_LOGGED = 'IS_LOGGED';
 const SH_USER_ID = 'ID_USER';
 const SH_USER_NAME = 'USER_NAME';
+const SH_USER_SURNAME = 'SH_USER_SURNAME';
 const SH_USER_ROL = 'USER_ROL';
+const SH_USER_TEL = 'USER_TEL';
 
 getSH() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
