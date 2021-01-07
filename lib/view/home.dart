@@ -8,6 +8,8 @@ import 'package:ag/view/component/cardGame.dart';
 import 'package:ag/view/component/sidebar.dart';
 import 'package:ag/view/configuration.dart';
 import 'package:ag/view/notification.dart';
+import 'package:ag/view/settings/profile.dart';
+import 'package:ag/view/settings/setting.dart';
 import 'package:ag/view/settings/yourOpinion.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,12 +57,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       case 1:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => YourOpinion()), );
+          MaterialPageRoute(builder: (context) => Profile()), );
         break;
       case 2:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => YourOpinion()), );
+          MaterialPageRoute(builder: (context) => Setting()), );
         break;
     }
   }
@@ -450,7 +452,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           }
         });
       }
-      return NavDrawer(items);
+
+      return Drawer(
+        child: CustomScrollView(
+          slivers: [
+            SliverList(delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return items[index];
+                  },
+                  childCount: items.length,
+            ))
+          ],
+        ),
+      );
     }
   }
 
@@ -510,7 +524,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             password: "123456"
         );
 
-        Provider.of<AuthenticationProvider>(context).logout(dto).then((value) {
+        Provider.of<AuthenticationProvider>(context, listen: false).logout(dto).then((value) {
            sh.setBool(SH_IS_LOGGED, false);
             Navigator.pushReplacement(
             context,

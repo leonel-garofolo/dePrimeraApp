@@ -64,7 +64,7 @@ class Config {
           ChangeNotifierProvider(create: (_) => ProvinciasProvider()),
           ChangeNotifierProvider(create: (_) => QueryProvider()),
           ChangeNotifierProvider(create: (_) => ComentariosProvider()),
-          ChangeNotifierProvider(create: (_) => SharePreferencesProvider()),
+          ChangeNotifierProvider(create: (_) => SharedPreferencesProvider()),
         ],
         child: DePrimeraApp(this),
       ));

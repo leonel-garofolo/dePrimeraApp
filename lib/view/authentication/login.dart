@@ -1,13 +1,12 @@
 
 
-import 'package:ag/helper/sharedPreferencesHelper.dart';
-import 'package:ag/providers/authenticationProvider.dart';
 import 'package:ag/network/model/dtos.dart';
+import 'package:ag/providers/authenticationProvider.dart';
+import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget{
   Login({Key key}) : super(key: key);
@@ -17,34 +16,10 @@ class Login extends StatefulWidget{
 }
 
 class _LoginState extends State<Login>{
-  final _formKey = GlobalKey<FormState>();
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   final email = TextEditingController();
   final clave = TextEditingController();
-  void authenticate(BuildContext ctx ) async{
-      final UserDTO user = new UserDTO(
-        idUser: email.text,
-        password: clave.text
-      );
-
-      UserDTO resp;
-      Provider.of<AuthenticationProvider>(context).login(user).then((value) => resp = value);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      if(resp.idUser == ""){
-        await prefs.setBool(SH_IS_LOGGED, false);
-        final message =  SnackBar(
-          content: Text("Error"),
-        );
-        Scaffold.of(ctx).showSnackBar(message);
-      } else {
-        await prefs.setBool(SH_IS_LOGGED, true);
-        await prefs.setString(SH_USER_ID, resp.idUser);
-        await prefs.setString(SH_USER_NAME, resp.nombre + " " + resp.apellido );
-        Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) => Home()));
-      }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
 
@@ -116,5 +91,31 @@ class _LoginState extends State<Login>{
         ),
       ),
     );
+  }
+
+  authenticate(BuildContext ctx){
+    final UserDTO user = new UserDTO(
+        idUser: email.text,
+        password: clave.text
+    );
+
+    Provider.of<AuthenticationProvider>(context, listen: false).login(user).then((value) {
+      final UserDTO resp = value;
+      if(resp.idUser == ""){
+        Provider.of<SharedPreferencesProvider>(context).saveLogged(false);
+        final message =  SnackBar(
+          content: Text("Error"),
+        );
+        Scaffold.of(ctx).showSnackBar(message);
+      } else {
+        Provider.of<SharedPreferencesProvider>(context, listen: false).saveLogged(true);
+        Provider.of<SharedPreferencesProvider>(context, listen: false).saveUserId(resp.idUser);
+        Provider.of<SharedPreferencesProvider>(context, listen: false).saveUserName(resp.nombre);
+        Provider.of<SharedPreferencesProvider>(context, listen: false).saveUserSurName(resp.apellido);
+        Provider.of<SharedPreferencesProvider>(context, listen: false).saveUserTelefono(resp.telefono);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => Home()));
+      }
+    });
   }
 }
