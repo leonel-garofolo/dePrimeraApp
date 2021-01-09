@@ -40,6 +40,7 @@ class LigaDTO extends ItemValue{
   String nombreContacto;
   String telefono;
   String telefonoContacto;
+  bool deleteSelected;
 
   LigaDTO(
       {this.cuit,
@@ -60,7 +61,7 @@ class LigaDTO extends ItemValue{
     nombreContacto = json['nombreContacto'];
     telefono = json['telefono'];
     telefonoContacto = json['telefonoContacto'];
-
+    deleteSelected = false;
 
   }
 

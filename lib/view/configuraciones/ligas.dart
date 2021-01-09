@@ -14,27 +14,63 @@ class LigasActivity extends StatefulWidget {
   LigasActivityState createState() => LigasActivityState();
 }
 
+bool _deleteMode;
 class LigasActivityState extends State<LigasActivity> {
+  List<LigaDTO> ligas;
+
   @override
   void initState() {
     super.initState();
+    _deleteMode = false;
     Provider.of<LigaProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
     Widget list = CircularProgress();
-    List<LigaDTO> ligas = Provider.of<LigaProvider>(context).getLigas();
+    ligas= Provider.of<LigaProvider>(context).getLigas();
+    Widget deleteModeWidget = Container();
+
+
     if(ligas != null){
       if(ligas.isNotEmpty){
         list= ListView.separated(
           padding: const EdgeInsets.all(8),
           itemCount: ligas.length,
           itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Center(child: Text('${ligas[index].nombre}')),
-              subtitle: Center(child: Text('${ligas[index].cuit}')),
+            if(_deleteMode){
+              deleteModeWidget =Checkbox(
+                  value: ligas[index].deleteSelected,
+                  onChanged: (newValue){
+                    setState(() {
+                      ligas[index].deleteSelected = newValue;
+                      print(ligas[index].deleteSelected);
+                    });
+                  });
+            } else {
+              deleteModeWidget = Container();
+            }
+
+            return InkWell(
+              onLongPress: (){
+                setState(() {
+                  _deleteMode = true;
+                });
+              },
               onTap: () => editEntity(context, ligas[index]),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${ligas[index].nombre}', style: TextStyle(fontSize: 20),)),
+                      Container(child: Text('${ligas[index].cuit}', style: TextStyle(fontSize: 12),))
+                    ],
+                  ),
+                  deleteModeWidget
+
+                ],
+              ),
             );
           },
           separatorBuilder: (BuildContext context, int index) => const Divider(),
@@ -44,9 +80,34 @@ class LigasActivityState extends State<LigasActivity> {
       }
     }
 
+    List<IconButton> icons = new List<IconButton>();
+    if(_deleteMode){
+      icons.add(IconButton(
+        icon: Icon(Icons.close),
+        onPressed: () {
+          setState(() {
+            _deleteMode = false;
+            for(LigaDTO liga in ligas){
+              liga.deleteSelected = false;
+            }
+          });
+        },
+      ));
+
+      icons.add(IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          for(LigaDTO liga in ligas){
+            print(liga.idLiga.toString() + "| " + liga.deleteSelected.toString());
+          }
+        },
+      ));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ligas'),
+        actions: icons,
       ),
       body: list,
       floatingActionButton: FloatingActionButton(
