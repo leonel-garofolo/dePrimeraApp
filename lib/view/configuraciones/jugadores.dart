@@ -21,6 +21,7 @@ class JugadoresActivity extends StatefulWidget {
   JugadoresActivityState createState() => JugadoresActivityState();
 }
 
+bool _deleteMode;
 class JugadoresActivityState extends State<JugadoresActivity> {
   List<PaisDTO> paises;
   List<ProvinciaDTO> provincias;
@@ -29,6 +30,7 @@ class JugadoresActivityState extends State<JugadoresActivity> {
   @override
   void initState() {
     super.initState();
+    _deleteMode = false;
     Provider.of<PaisesProvider>(context, listen: false).getAll();
     Provider.of<ProvinciasProvider>(context, listen: false).getAll();
     Provider.of<EquiposProvider>(context, listen: false).getAll();
@@ -43,7 +45,6 @@ class JugadoresActivityState extends State<JugadoresActivity> {
     equipos = Provider.of<EquiposProvider>(context).getEquipos();
     List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
     List<JugadorDTO> jugadores = Provider.of<JugadoresProvider>(context).getJugadores();
-
     Widget list = CircularProgress();
     if(jugadores != null){
       if(jugadores.isNotEmpty) {
@@ -83,14 +84,45 @@ class JugadoresActivityState extends State<JugadoresActivity> {
             }
           }
 
+          Widget deleteModeWidget = Container();
+
           list= ListView.separated(
             padding: const EdgeInsets.all(8),
             itemCount: jugadores.length,
             itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Center(child: Text('${jugadores[index].personaDTO.apellidoNombre}')),
-                subtitle: Center(child: Text('${jugadores[index].personaDTO.idTipoDoc.toString() + " - " +  jugadores[index].personaDTO.nroDoc.toString()}')),
+              if(_deleteMode){
+                deleteModeWidget =Checkbox(
+                    value: jugadores[index].deleteSelected,
+                    onChanged: (newValue){
+                      setState(() {
+                        jugadores[index].deleteSelected = newValue;
+                        print(jugadores[index].deleteSelected);
+                      });
+                    });
+              } else {
+                deleteModeWidget = Container();
+              }
+
+              return InkWell(
+                onLongPress: (){
+                  setState(() {
+                    _deleteMode = true;
+                  });
+                },
                 onTap: () => editEntity(context, jugadores[index]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${jugadores[index].personaDTO.apellidoNombre}', style: TextStyle(fontSize: 20),)),
+                        Container(child: Text('${jugadores[index].personaDTO.idTipoDoc} + ' ' + ${jugadores[index].personaDTO.nroDoc}', style: TextStyle(fontSize: 12),))
+                      ],
+                    ),
+                    deleteModeWidget
+
+                  ],
+                ),
               );
             },
             separatorBuilder: (BuildContext context, int index) => const Divider(),
@@ -101,9 +133,34 @@ class JugadoresActivityState extends State<JugadoresActivity> {
       }
     }
 
+    List<IconButton> icons = new List<IconButton>();
+    if(_deleteMode) {
+      icons.add(IconButton(
+        icon: Icon(Icons.close),
+        onPressed: () {
+          setState(() {
+            _deleteMode = false;
+            for (JugadorDTO jugador in jugadores) {
+              jugador.deleteSelected = false;
+            }
+          });
+        },
+      ));
+
+      icons.add(IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: () {
+          for (JugadorDTO jugador in jugadores) {
+            print(jugador.idJugador.toString() + "| " +
+                jugador.deleteSelected.toString());
+          }
+        },
+      ));
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Jugadores'),
+        actions: icons,
       ),
       body: list,
       floatingActionButton: FloatingActionButton(

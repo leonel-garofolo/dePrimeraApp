@@ -127,6 +127,16 @@ class CampeonatosFormState extends State<CampeonatosForm>{
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.campeonatoDTO != null? this.widget.campeonatoDTO.descripcion : "Nuevo Campeonato"}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              Provider.of<CampeonatosProvider>(context, listen: false).delete(widget.campeonatoDTO.idCampeonato);
+              Provider.of<CampeonatosProvider>(context, listen: false).getAll();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

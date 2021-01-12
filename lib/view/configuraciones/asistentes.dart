@@ -193,6 +193,16 @@ class AsistentesFormState extends State<AsistentesForm>{
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.asistenteDTO != null? this.widget.asistenteDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              Provider.of<AsistentesProvider>(context, listen: false).delete(widget.asistenteDTO.idAsistente);
+              Provider.of<AsistentesProvider>(context, listen: false).getAll();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

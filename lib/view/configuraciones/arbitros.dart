@@ -192,6 +192,16 @@ class ArbitrosFormState extends State<ArbitrosForm>{
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.arbitroDTO != null? this.widget.arbitroDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              Provider.of<ArbitrosProvider>(context, listen: false).delete(widget.arbitroDTO.idArbitro);
+              Provider.of<ArbitrosProvider>(context, listen: false).getAll();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

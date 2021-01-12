@@ -105,6 +105,16 @@ class EquiposFormState extends State<EquiposForm>{
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.equipoDTO != null? this.widget.equipoDTO.nombre : "Nuevo Equipo"}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              Provider.of<EquiposProvider>(context, listen: false).delete(widget.equipoDTO.idEquipo);
+              Provider.of<EquiposProvider>(context, listen: false).getAll();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),

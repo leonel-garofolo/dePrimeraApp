@@ -455,8 +455,8 @@ class JugadorDTO {
   PersonaDTO personaDTO;
   int idEquipo;
   EquipoDTO equipoDTO;
-
-  JugadorDTO({this.idJugador, this.idPersona, this.idEquipo});
+  bool deleteSelected;
+  JugadorDTO({this.idJugador, this.idPersona, this.idEquipo, this.deleteSelected});
 
   JugadorDTO.fromJson(Map<String, dynamic> json) {
     idJugador = json['id_jugador'];

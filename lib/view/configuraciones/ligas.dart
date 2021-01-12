@@ -52,11 +52,6 @@ class LigasActivityState extends State<LigasActivity> {
             }
 
             return InkWell(
-              onLongPress: (){
-                setState(() {
-                  _deleteMode = true;
-                });
-              },
               onTap: () => editEntity(context, ligas[index]),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,34 +75,9 @@ class LigasActivityState extends State<LigasActivity> {
       }
     }
 
-    List<IconButton> icons = new List<IconButton>();
-    if(_deleteMode){
-      icons.add(IconButton(
-        icon: Icon(Icons.close),
-        onPressed: () {
-          setState(() {
-            _deleteMode = false;
-            for(LigaDTO liga in ligas){
-              liga.deleteSelected = false;
-            }
-          });
-        },
-      ));
-
-      icons.add(IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          for(LigaDTO liga in ligas){
-            print(liga.idLiga.toString() + "| " + liga.deleteSelected.toString());
-          }
-        },
-      ));
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ligas'),
-        actions: icons,
       ),
       body: list,
       floatingActionButton: FloatingActionButton(
@@ -167,10 +137,21 @@ class LigasFormState extends State<LigasForm>{
       mailContacto.text = this.widget.ligaDTO.mailContacto;
     }
 
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("${this.widget.ligaDTO != null? this.widget.ligaDTO.nombre : "Nueva Liga"}"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              Provider.of<LigaProvider>(context, listen: false).delete(widget.ligaDTO.idLiga);
+              Provider.of<LigaProvider>(context, listen: false).getAll();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
       padding: EdgeInsets.all(20.0),
