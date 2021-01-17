@@ -25,7 +25,7 @@ class AuthenticationProvider extends API with ChangeNotifier {
 
   Future<String> createAccount(UserDTO dto) async{
     try{
-      final response = await super.postHttp(endPoint + "/reset", dto);
+      final response = await super.postHttp(endPoint + "/register", dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
         return response.body;
@@ -65,6 +65,21 @@ class AuthenticationProvider extends API with ChangeNotifier {
     } on Exception catch(e) {
       print(e);
       return false;
+    }
+  }
+
+  Future<AppGruposDTO> getUserPermission(String user) async{
+    try{
+      final response = await super.getHttp(endPoint + "/permiso/"+ user);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return AppGruposDTO.fromJson(json.decode(response.body));
+      } on Exception {
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return null;
     }
   }
 }

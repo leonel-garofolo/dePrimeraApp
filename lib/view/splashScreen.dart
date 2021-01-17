@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:ag/helper/sharedPreferencesHelper.dart';
-import 'package:ag/view/home.dart';
+import 'package:ag/providers/sharedPreferenceProvider.dart';
+import 'package:ag/view/home/home.dart';
 import 'package:ag/view/authentication/login.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -13,32 +15,35 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool status;
   @override
   void initState() {
     super.initState();
+    Provider.of<SharedPreferencesProvider>(context, listen: false).getSharedPreference();
+    _mockCheckForSession();
+  }
 
-    _mockCheckForSession().then((status) {
-      if (status) {
-        _navigateToHome();
-      } else {
-        _navigateToLogin();
+ _mockCheckForSession() async {
+    await Future.delayed(Duration(milliseconds: 3000), () {
+      status = Provider.of<SharedPreferencesProvider>(context, listen: false).isLogged();
+      if(status != null){
+        if (status) {
+          _navigateToHome();
+        } else {
+          _navigateToLogin();
+        }
       }
     });
   }
 
-  Future<bool> _mockCheckForSession() async {
-    await Future.delayed(Duration(milliseconds: 3000), () {});
-    bool status = false;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(prefs.get(SH_IS_LOGGED) != null){
-      status = prefs.getBool(SH_IS_LOGGED);
-    }
-    return status;
-  }
-
   void _navigateToHome() {
     Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (BuildContext context) => Home()));
+        MaterialPageRoute(builder: (BuildContext context) =>
+            Home(
+              idUser: Provider.of<SharedPreferencesProvider>(context, listen: false).getUserId(),
+              idGrupo: Provider.of<SharedPreferencesProvider>(context, listen: false).getUserGrupo(),
+
+            )));
   }
 
   void _navigateToLogin() {
@@ -48,6 +53,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(

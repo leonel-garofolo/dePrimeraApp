@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CardGame extends StatelessWidget{
+  final String escudoImage = 'assets/images/escudo.png';
+
   CardGame({this.championName, this.date, this.localName, this.localGoal, this.visitName, this.visitGoal});
 
   final String championName;
@@ -33,7 +35,7 @@ class CardGame extends StatelessWidget{
                     ),
                 ),
                 child: new ListTile (
-                    title: Text(championName)
+                    title: Text(championName,  overflow: TextOverflow.ellipsis, )
                 )
             ),
             SizedBox(height: 10),
@@ -41,15 +43,31 @@ class CardGame extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  margin: EdgeInsets.only(left: 5),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Icon(Icons.arrow_downward),
-                      SizedBox(width: 5),
-                      Text(localName)
+                      Image(
+                        image: AssetImage(escudoImage),
+                        width: 30,
+                        height: 30,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.24,
+                        child: Text(
+                          localName,
+                          maxLines: 2,
+                          softWrap: true,
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+
                 Container(
+                  width: MediaQuery.of(context).size.width * 0.15,
                   child: Column(
                     children: <Widget>[
                       Text(sDate + ' hs'),
@@ -58,14 +76,25 @@ class CardGame extends StatelessWidget{
                   ),
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  margin: EdgeInsets.only(right: 5),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Icon(Icons.featured_play_list),
-                      SizedBox(width: 5),
-                      Text(visitName)
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.24,
+                        child: Text(
+                          visitName,
+                          maxLines: 2,
+                          softWrap: true,
+                          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Image(
+                        image: AssetImage(escudoImage),
+                        width: 30,
+                        height: 30,
+                      ),
                     ],
                   ),
                 ),

@@ -47,6 +47,22 @@ class PersonasProvider extends API with ChangeNotifier  {
     }
   }
 
+  Future<PersonaDTO> getPersonaForUser(String idUser) async{
+    try{
+      final response = await super.getHttp(endPoint + "/user/" + idUser);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return  PersonaDTO.fromJson(json.decode(response.body));
+      } on Exception {
+        return null;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return null;
+    }
+  }
+
+
   Future<String> save(PersonaDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);

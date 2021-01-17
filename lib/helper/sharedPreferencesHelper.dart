@@ -5,6 +5,7 @@ const SH_USER_NAME = 'USER_NAME';
 const SH_USER_SURNAME = 'SH_USER_SURNAME';
 const SH_USER_ROL = 'USER_ROL';
 const SH_USER_TEL = 'USER_TEL';
+const SH_USER_GRUPO = 'USER_GRUPO';
 
 getSH() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -17,6 +18,11 @@ Future<bool> getSHBoolValue(String name) async {
     bValue = false;
   }
   return bValue;
+}
+
+saveSHBoolValue(String key, bool value) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool(key, value);
 }
 
 Future<String> getSHStringValue(String name) async {

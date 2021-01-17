@@ -88,8 +88,6 @@ class _ProfileState extends State<Profile> {
   send(BuildContext context){
     UserDTO dto = new UserDTO(
       idUser: email.text,
-      nombre: nombre.text,
-      apellido: apellido.text,
       telefono: telefono.text
     );
     print(dto);

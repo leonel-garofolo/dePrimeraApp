@@ -3,6 +3,7 @@ import 'package:ag/providers/equiposProvider.dart';
 import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldCheckBox.dart';
 import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -136,17 +137,12 @@ class EquiposFormState extends State<EquiposForm>{
                   });
                 },
               ),
-              SizedBox(
-                width: double.infinity,
-                child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () {
+              Container(height: 10,),
+              ButtonRequest(
+                  text: "Guardar",
+                  onPressed: (){
                     save();
-                  },
-                  child: const Text('Guardar',
-                      style: TextStyle(fontSize: 20)),
-                ),
+                  }
               ),
             ],
           ),

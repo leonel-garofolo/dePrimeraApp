@@ -24,6 +24,20 @@ class CampeonatosProvider extends API with ChangeNotifier {
     }
   }
 
+  getCampeonatoFromUser(String idUser, int idGrupo) async{
+    try{
+      final response = await super.getHttp(endPoint + "/user/" + idUser + "/" + idGrupo.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        setCampeonatos((json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList());
+      } on Exception catch(e) {
+        print(e);
+      }
+    } on Exception catch(e) {
+      print(e);
+    }
+  }
+
   List<CampeonatoDTO> getCampeonatos(){
     return campeonatos;
   }

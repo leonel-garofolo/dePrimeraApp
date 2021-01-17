@@ -27,6 +27,7 @@ dependencies:
   event_bus: 1.1.1
   provider: ^4.3.2+3
   flutter_rating_bar: ^3.2.0+1
+  flutter_svg: ^0.19.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

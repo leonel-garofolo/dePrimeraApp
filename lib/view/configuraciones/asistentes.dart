@@ -8,6 +8,7 @@ import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldNumber.dart';
 import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,7 @@ class AsistentesActivityState extends State<AsistentesActivity> {
             itemCount: asistentes.length,
             itemBuilder: (BuildContext context, int index) {
               return ListTile(
-                title: Center(child: Text('${asistentes[index].personaDTO.apellidoNombre}')),
+                title: Center(child: Text('${asistentes[index].personaDTO.nombre}')),
                 subtitle: Center(child: Text('${asistentes[index].personaDTO.idTipoDoc.toString() + " - " +  asistentes[index].personaDTO.nroDoc.toString()}')),
                 onTap: () => editEntity(context, asistentes[index]),
               );
@@ -173,7 +174,7 @@ class AsistentesFormState extends State<AsistentesForm>{
   @override
   Widget build(BuildContext context) {
     if(this.widget.asistenteDTO != null){
-      apellidoNombre.text = this.widget.asistenteDTO.personaDTO.apellidoNombre;
+      apellidoNombre.text = this.widget.asistenteDTO.personaDTO.nombre;
       domicilio.text = this.widget.asistenteDTO.personaDTO.domicilio;
       edad.text = this.widget.asistenteDTO.personaDTO.edad.toString();
       idLocalidad.text = this.widget.asistenteDTO.personaDTO.localidad;
@@ -192,7 +193,7 @@ class AsistentesFormState extends State<AsistentesForm>{
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.asistenteDTO != null? this.widget.asistenteDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.asistenteDTO != null? this.widget.asistenteDTO.personaDTO.nombre : "Nuevo Arbitro"}"),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -253,17 +254,12 @@ class AsistentesFormState extends State<AsistentesForm>{
                 itemList: widget.campeonatosDTO,
                 onChange: onChangeCampeonato,
               ),
-              SizedBox(
-                width: double.infinity,
-                child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () {
+              Container(height: 10,),
+              ButtonRequest(
+                  text: "Guardar",
+                  onPressed: (){
                     save();
-                  },
-                  child: const Text('Guardar',
-                      style: TextStyle(fontSize: 20)),
-                ),
+                  }
               ),
             ],
           ),
@@ -292,7 +288,7 @@ class AsistentesFormState extends State<AsistentesForm>{
   save() async{
     final AsistenteDTO asistenteDTO = new AsistenteDTO();
     final PersonaDTO personaDTO = new PersonaDTO(
-        apellidoNombre: apellidoNombre.text,
+        nombre: apellidoNombre.text,
         idTipoDoc: int.parse(idTipoDoc.text),
         nroDoc: int.parse(nroDoc.text),
         domicilio: domicilio.text,

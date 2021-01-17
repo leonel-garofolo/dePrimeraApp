@@ -2,6 +2,7 @@ import 'package:ag/providers/ligaProvider.dart';
 import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -188,26 +189,20 @@ class LigasFormState extends State<LigasForm>{
               label: "Telefono Contacto",
               controller: telefonoContacto,
             ),
-            SizedBox(
-              width: double.infinity,
-              child: RaisedButton(
-                color: Colors.blue,
-                textColor: Colors.white,
+            Container(height: 10,),
+            ButtonRequest(
+                text: "Guardar",
                 onPressed: () {
                   save();
-                },
-                child: const Text('Guardar',
-                    style: TextStyle(fontSize: 20)),
-              ),
+                }
             )
-
           ],
         ),
       ),),
     );
   }
 
-  save() async{
+  save() {
     final LigaDTO ligaDTO = new LigaDTO();
     if(this.widget.ligaDTO != null){
       ligaDTO.idLiga = this.widget.ligaDTO.idLiga;

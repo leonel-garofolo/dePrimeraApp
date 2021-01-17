@@ -8,6 +8,7 @@ import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldNumber.dart';
 import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -115,8 +116,8 @@ class JugadoresActivityState extends State<JugadoresActivity> {
                   children: [
                     Column(
                       children: [
-                        Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${jugadores[index].personaDTO.apellidoNombre}', style: TextStyle(fontSize: 20),)),
-                        Container(child: Text('${jugadores[index].personaDTO.idTipoDoc} + ' ' + ${jugadores[index].personaDTO.nroDoc}', style: TextStyle(fontSize: 12),))
+                        Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${jugadores[index].personaDTO.nombre}', style: TextStyle(fontSize: 20),)),
+                        Container(child: Text('${jugadores[index].personaDTO.idTipoDoc} ${jugadores[index].personaDTO.nroDoc}', style: TextStyle(fontSize: 12),))
                       ],
                     ),
                     deleteModeWidget
@@ -229,7 +230,7 @@ class JugadoresFormState extends State<JugadoresForm>{
   @override
   Widget build(BuildContext context) {
     if(this.widget.jugadorDTO != null){
-      apellidoNombre.text = this.widget.jugadorDTO.personaDTO.apellidoNombre;
+      apellidoNombre.text = this.widget.jugadorDTO.personaDTO.nombre;
       domicilio.text = this.widget.jugadorDTO.personaDTO.domicilio;
       edad.text = this.widget.jugadorDTO.personaDTO.edad.toString();
       idLocalidad.text = this.widget.jugadorDTO.personaDTO.localidad;
@@ -248,7 +249,7 @@ class JugadoresFormState extends State<JugadoresForm>{
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.nombre : "Nuevo Arbitro"}"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -299,17 +300,12 @@ class JugadoresFormState extends State<JugadoresForm>{
                 itemList: widget.equiposDTO,
                 onChange: onChangeEquipo,
               ),
-              SizedBox(
-                width: double.infinity,
-                child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () {
+              Container(height: 10,),
+              ButtonRequest(
+                  text: "Guardar",
+                  onPressed: (){
                     save();
-                  },
-                  child: const Text('Guardar',
-                      style: TextStyle(fontSize: 20)),
-                ),
+                  }
               ),
             ],
           ),
@@ -338,7 +334,7 @@ class JugadoresFormState extends State<JugadoresForm>{
   save() async{
     final JugadorDTO jugadorDTO = new JugadorDTO();
     final PersonaDTO personaDTO = new PersonaDTO(
-        apellidoNombre: apellidoNombre.text,
+        nombre: apellidoNombre.text,
         idTipoDoc: int.parse(idTipoDoc.text),
         nroDoc: int.parse(nroDoc.text),
         domicilio: domicilio.text,

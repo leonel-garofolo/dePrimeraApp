@@ -8,6 +8,7 @@ import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldNumber.dart';
 import 'package:ag/view/component/fieldText.dart';
+import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
               itemCount: arbitros.length,
               itemBuilder: (BuildContext context, int index) {
                 return ListTile(
-                  title: Center(child: Text('${arbitros[index].personaDTO.apellidoNombre}')),
+                  title: Center(child: Text('${arbitros[index].personaDTO.nombre}')),
                   subtitle: Center(child: Text('${arbitros[index].personaDTO.idTipoDoc.toString() + " - " +  arbitros[index].personaDTO.nroDoc.toString()}')),
                   onTap: () => editEntity(context, arbitros[index]),
                 );
@@ -172,7 +173,7 @@ class ArbitrosFormState extends State<ArbitrosForm>{
   @override
   Widget build(BuildContext context) {
     if(this.widget.arbitroDTO != null){
-      apellidoNombre.text = this.widget.arbitroDTO.personaDTO.apellidoNombre;
+      apellidoNombre.text = this.widget.arbitroDTO.personaDTO.nombre;
       domicilio.text = this.widget.arbitroDTO.personaDTO.domicilio;
       edad.text = this.widget.arbitroDTO.personaDTO.edad.toString();
       idLocalidad.text = this.widget.arbitroDTO.personaDTO.localidad;
@@ -191,7 +192,7 @@ class ArbitrosFormState extends State<ArbitrosForm>{
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.arbitroDTO != null? this.widget.arbitroDTO.personaDTO.apellidoNombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.arbitroDTO != null? this.widget.arbitroDTO.personaDTO.nombre : "Nuevo Arbitro"}"),
         actions: [
           IconButton(
             icon: Icon(Icons.delete),
@@ -205,7 +206,7 @@ class ArbitrosFormState extends State<ArbitrosForm>{
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
-        child:Form(
+        child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,17 +253,12 @@ class ArbitrosFormState extends State<ArbitrosForm>{
                 itemList: widget.campeonatosDTO,
                 onChange: onChangeCampeonato,
               ),
-              SizedBox(
-                width: double.infinity,
-                child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () {
+              Container(height: 10,),
+              ButtonRequest(
+                  text: "Guardar",
+                  onPressed: (){
                     save();
-                  },
-                  child: const Text('Guardar',
-                      style: TextStyle(fontSize: 20)),
-                ),
+                  }
               ),
             ],
           ),
@@ -291,7 +287,7 @@ class ArbitrosFormState extends State<ArbitrosForm>{
   save() async{
     final ArbitroDTO arbitroDTO = new ArbitroDTO();
     final PersonaDTO personaDTO = new PersonaDTO(
-      apellidoNombre: apellidoNombre.text,
+      nombre: apellidoNombre.text,
       idTipoDoc: int.parse(idTipoDoc.text),
       nroDoc: int.parse(nroDoc.text),
       domicilio: domicilio.text,

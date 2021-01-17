@@ -197,17 +197,19 @@ class EquipoTablePosDTO {
 }
 
 class SancionesJugadoresFromCampeonatoDTO {
-  String apellidoNombre;
+  String apellido;
+  String nombre;
   String eNombre;
   int  cRojas;
   int cAmarillas;
   int cAzules;
 
   SancionesJugadoresFromCampeonatoDTO(
-      {this.apellidoNombre, this.eNombre, this.cRojas, this.cAmarillas, this.cAzules});
+      {this.nombre, this.apellido, this.eNombre, this.cRojas, this.cAmarillas, this.cAzules});
 
   SancionesJugadoresFromCampeonatoDTO.fromJson(Map<String, dynamic> json) {
-    apellidoNombre = json['apellido_nombre'];
+    nombre = json['nombre'];
+    apellido = json['apellido'];
     eNombre = json['e_nombre'];
     cRojas = json['c_rojas'];
     cAmarillas = json['c_amarillas'];
@@ -216,7 +218,8 @@ class SancionesJugadoresFromCampeonatoDTO {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['apellido_nombre'] = this.apellidoNombre;
+    data['nombre'] = this.nombre;
+    data['apellido'] = this.apellido;
     data['e_nombre'] = this.eNombre;
     data['c_rojas'] = this.cRojas;
     data['c_amarillas'] = this.cAmarillas;
@@ -346,7 +349,8 @@ class PartidosFromDateDTO {
 
 class PersonaDTO {
   int idPersona;
-  String apellidoNombre;
+  String nombre;
+  String apellido;
   String domicilio;
   int edad;
   String localidad;
@@ -359,7 +363,8 @@ class PersonaDTO {
 
   PersonaDTO(
       {this.idPersona,
-        this.apellidoNombre,
+        this.nombre,
+        this.apellido,
         this.domicilio,
         this.edad,
         this.localidad,
@@ -369,7 +374,8 @@ class PersonaDTO {
         this.nroDoc});
 
   PersonaDTO.fromJson(Map<String, dynamic> json) {
-    apellidoNombre = json['apellido_nombre'];
+    nombre = json['nombre'];
+    apellido = json['apellido'];
     domicilio = json['domicilio'];
     edad = json['edad'];
     localidad = json['localidad'];
@@ -382,7 +388,8 @@ class PersonaDTO {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['apellido_nombre'] = this.apellidoNombre;
+    data['nombre'] = this.nombre;
+    data['apellido'] = this.apellido;
     data['domicilio'] = this.domicilio;
     data['edad'] = this.edad;
     data['localidad'] = this.localidad;
@@ -530,24 +537,18 @@ class AppGruposDTO extends ItemValue{
 class UserDTO extends ItemValue{
   String idUser;
   String password;
-  String nombre;
-  String apellido;
   String telefono;
   bool habilitado;
 
   UserDTO({
     this.idUser,
     this.password,
-    this.nombre,
-    this.apellido,
     this.telefono,
     this.habilitado});
 
   UserDTO.fromJson(Map<String, dynamic> json) {
     idUser = json['id_user'];
     password = json['password'];
-    nombre = json['nombre'];
-    apellido = json['apellido'];
     telefono = json['telefono'];
     habilitado = json['habilitado'];
 
@@ -557,8 +558,6 @@ class UserDTO extends ItemValue{
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id_user'] = this.idUser;
     data['password'] = this.password;
-    data['nombre'] = this.nombre;
-    data['apellido'] = this.apellido;
     data['telefono'] = this.telefono;
     data['habilitado'] = this.habilitado;
     return data;
