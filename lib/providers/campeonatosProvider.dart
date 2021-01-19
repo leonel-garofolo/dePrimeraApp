@@ -9,6 +9,9 @@ const String endPoint = "/campeonatos";
 class CampeonatosProvider extends API with ChangeNotifier {
 
   List<CampeonatoDTO> campeonatos;
+  List<PartidosFromDateDTO> partidos;
+  List<EquipoTablePosDTO> equipos;
+  List<SancionesJugadoresFromCampeonatoDTO> sancionesJugadores;
 
   getAll() async{
     try{
@@ -62,52 +65,73 @@ class CampeonatosProvider extends API with ChangeNotifier {
     }
   }
 
-  Future<List<PartidosFromDateDTO>> getFixture(int id) async{
+  getFixture(int id) async{
     try{
       final response = await super.getHttp(endPoint + "/fixture/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList();
+        setPartidos((json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList());
       } on Exception catch(e) {
         print(e);
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<List<EquipoTablePosDTO>> getTablePosition(int id) async{
+  setPartidos(List<PartidosFromDateDTO>  partidos){
+    this.partidos = partidos;
+    notifyListeners();
+  }
+
+  List<PartidosFromDateDTO> getPartidos(){
+    return this.partidos;
+  }
+
+  getTablePosition(int id) async{
     try{
       final response = await super.getHttp(endPoint + "/table/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => EquipoTablePosDTO.fromJson(i)).toList();
+        setEquipos((json.decode(response.body) as List).map((i) => EquipoTablePosDTO.fromJson(i)).toList());
       } on Exception catch(e) {
         print(e);
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<List<SancionesJugadoresFromCampeonatoDTO>> getTableSanciones(int id) async{
+  setEquipos(List<EquipoTablePosDTO> equipos){
+    this.equipos = equipos;
+    notifyListeners();
+  }
+
+  List<EquipoTablePosDTO> getEquipos(){
+    return this.equipos;
+  }
+
+ getTableSanciones(int id) async{
     try{
       final response = await super.getHttp(endPoint + "/sanciones/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => SancionesJugadoresFromCampeonatoDTO.fromJson(i)).toList();
+        setSancionesJugadores((json.decode(response.body) as List).map((i) => SancionesJugadoresFromCampeonatoDTO.fromJson(i)).toList());
       } on Exception catch(e) {
         print(e);
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
+  }
+
+  setSancionesJugadores(List<SancionesJugadoresFromCampeonatoDTO> sancionesJugadores){
+    this.sancionesJugadores = sancionesJugadores;
+    notifyListeners();
+  }
+
+  List<SancionesJugadoresFromCampeonatoDTO> getSancionesJugadores(){
+    return this.sancionesJugadores;
   }
 
   Future<String> save(CampeonatoDTO dto) async{

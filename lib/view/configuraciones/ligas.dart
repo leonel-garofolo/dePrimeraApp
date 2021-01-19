@@ -28,67 +28,75 @@ class LigasActivityState extends State<LigasActivity> {
 
   @override
   Widget build(BuildContext context) {
-    Widget list = CircularProgress();
-    ligas= Provider.of<LigaProvider>(context).getLigas();
-    Widget deleteModeWidget = Container();
+    return Consumer<LigaProvider>(
+      builder: (context, liga, child) {
+        Widget list;
+        if(liga.isLoading){
+          list =  CircularProgress();
+        } else {
+          ligas= liga.ligas;
+          Widget deleteModeWidget = Container();
 
+          if(ligas != null){
+            if(ligas.isNotEmpty){
+              list= ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: ligas.length,
+                itemBuilder: (BuildContext context, int index) {
+                  if(_deleteMode){
+                    deleteModeWidget =Checkbox(
+                        value: ligas[index].deleteSelected,
+                        onChanged: (newValue){
+                          setState(() {
+                            ligas[index].deleteSelected = newValue;
+                            print(ligas[index].deleteSelected);
+                          });
+                        });
+                  } else {
+                    deleteModeWidget = Container();
+                  }
 
-    if(ligas != null){
-      if(ligas.isNotEmpty){
-        list= ListView.separated(
-          padding: const EdgeInsets.all(8),
-          itemCount: ligas.length,
-          itemBuilder: (BuildContext context, int index) {
-            if(_deleteMode){
-              deleteModeWidget =Checkbox(
-                  value: ligas[index].deleteSelected,
-                  onChanged: (newValue){
-                    setState(() {
-                      ligas[index].deleteSelected = newValue;
-                      print(ligas[index].deleteSelected);
-                    });
-                  });
+                  return InkWell(
+                    onTap: () => editEntity(context, ligas[index]),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${ligas[index].nombre}', style: TextStyle(fontSize: 20),)),
+                            Container(child: Text('${ligas[index].cuit}', style: TextStyle(fontSize: 12),))
+                          ],
+                        ),
+                        deleteModeWidget
+
+                      ],
+                    ),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => const Divider(),
+              );
             } else {
-              deleteModeWidget = Container();
+              list = WithoutData();
             }
+          }
+        }
 
-            return InkWell(
-              onTap: () => editEntity(context, ligas[index]),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${ligas[index].nombre}', style: TextStyle(fontSize: 20),)),
-                      Container(child: Text('${ligas[index].cuit}', style: TextStyle(fontSize: 12),))
-                    ],
-                  ),
-                  deleteModeWidget
-
-                ],
-              ),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) => const Divider(),
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Ligas'),
+          ),
+          body: list,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              newEntity(context);
+            },
+            child: Icon(Icons.add),
+            backgroundColor: Colors.lightBlueAccent,
+          ),
         );
-      } else {
-        list = WithoutData();
-      }
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ligas'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
+      },
     );
+
   }
 
   editEntity(final BuildContext context, LigaDTO ligaDTO){

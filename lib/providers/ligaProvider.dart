@@ -9,14 +9,23 @@ import 'package:flutter/cupertino.dart';
 const String endPoint = "/ligas";
 class LigaProvider extends API with ChangeNotifier  {
 
+  LigaProvider(){
+    getAll();
+  }
+
+  bool isLoading;
   List<LigaDTO> ligas;
 
   getAll() async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setLigas((json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList());
+        this.ligas = (json.decode(response.body) as List).map((i) => LigaDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);
       }

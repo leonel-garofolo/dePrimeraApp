@@ -140,7 +140,6 @@ class MenuDrawer extends StatelessWidget {
 
         menus.forEach((menu) {
           if (!menu.isSubMenu) {
-            //items.add(Divider(color:Colors.black));
             items.add(ListTile(
               leading: menu.icon,
               contentPadding: EdgeInsets.fromLTRB(10, 5, 0, 0),

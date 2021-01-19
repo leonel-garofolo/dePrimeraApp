@@ -274,7 +274,11 @@ class PartidoDTO {
     observacion = json['observacion'];
     resultadoLocal = json['resultado_local'];
     resultadoVisitante = json['resultado_visitante'];
-    suspendido = json['suspendido'];
+    if( json['suspendido'] == ""){
+      suspendido = false;
+    } else {
+      suspendido = json['suspendido'].toLowerCase() == 'true';
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -479,6 +483,34 @@ class JugadorDTO {
 
     data['id_persona'] = this.idPersona;
     data['id_equipo'] = this.idEquipo;
+    return data;
+  }
+}
+
+class JugadorPlantelDTO {
+  int idJugador;
+  String nombre;
+  String apellido;
+  int nroCamiseta;
+
+  JugadorPlantelDTO({this.idJugador, this.nombre, this.apellido, this.nroCamiseta});
+
+  JugadorPlantelDTO.fromJson(Map<String, dynamic> json) {
+    idJugador = json['id_jugador'];
+    nombre = json['nombre'];
+    apellido = json['apellido'];
+    nroCamiseta = json['nro_camiseta'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    if(this.idJugador != null){
+      data['id_jugador'] = this.idJugador;
+    }
+
+    data['nombre'] = this.nombre;
+    data['apellido'] = this.apellido;
+    data['nro_camiseta'] = this.nroCamiseta;
     return data;
   }
 }

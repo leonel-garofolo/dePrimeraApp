@@ -19,6 +19,7 @@ import 'package:ag/providers/provinciasProvider.dart';
 import 'package:ag/providers/queryProvider.dart';
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/providers/userProvider.dart';
+import 'package:ag/view/configuraciones/ligas.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -47,14 +48,19 @@ class Config {
     runZoned(() {
       runApp(MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => AppGruposProvider()),
+          ChangeNotifierProvider(
+              create: (_) => AppGruposProvider()
+          ),
           ChangeNotifierProvider(create: (_) => ArbitrosProvider()),
           ChangeNotifierProvider(create: (_) => AsistentesProvider()),
           ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
           ChangeNotifierProvider(create: (_) => CampeonatosProvider()),
           ChangeNotifierProvider(create: (_) => EquiposProvider()),
           ChangeNotifierProvider(create: (_) => JugadoresProvider()),
-          ChangeNotifierProvider(create: (_) => LigaProvider()),
+          ChangeNotifierProvider(
+              create: (_) => LigaProvider(),
+              child: LigasActivity(),
+          ),
           ChangeNotifierProvider(create: (_) => MenuProvider()),
           ChangeNotifierProvider(create: (_) => NotificacionesProvider()),
           ChangeNotifierProvider(create: (_) => PartidosProvider()),

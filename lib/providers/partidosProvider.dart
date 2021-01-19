@@ -6,13 +6,38 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/partidos";
 class PartidosProvider extends API with ChangeNotifier  {
+  List<PartidosFromDateDTO> partidosView;
+  List<PartidoDTO> partidos;
 
-  Future<List<PartidoDTO>> getAll() async{
+  getAll() async{
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList();
+        setPartidos((json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList());
+      } on Exception catch(e) {
+        print(e);
+      }
+    } on Exception catch(e) {
+      print(e);
+    }
+  }
+
+  setPartidos(List<PartidoDTO> partidos){
+    this.partidos = partidos;
+    notifyListeners();
+  }
+
+  List<PartidoDTO> getPartidos(){
+    return this.partidos;
+  }
+
+  getPartidosFromEquipo(int idEquipo) async{
+    try{
+      final response = await super.getHttp(endPoint + "/equipo/" + idEquipo.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        setPartidosView((json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList());
       } on Exception {
         return null;
       }
@@ -20,6 +45,15 @@ class PartidosProvider extends API with ChangeNotifier  {
       print(e);
       return null;
     }
+  }
+
+  setPartidosView(List<PartidosFromDateDTO> partidos){
+    this.partidosView = partidos;
+    notifyListeners();
+  }
+
+  List<PartidosFromDateDTO> getPartidosView(){
+    return this.partidosView;
   }
 
   Future<PartidoDTO> get(int id) async{

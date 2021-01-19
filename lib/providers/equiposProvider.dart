@@ -7,7 +7,9 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/equipos";
 class EquiposProvider extends API with ChangeNotifier  {
+  List<JugadorPlantelDTO> jugadores;
   List<EquipoDTO> equipos;
+
   getAll() async{
     try{
       final response = await super.getHttp(endPoint);
@@ -20,6 +22,43 @@ class EquiposProvider extends API with ChangeNotifier  {
     } on Exception catch(e) {
       print(e);
     }
+  }
+
+  getEquiposFromUser(String idUser, int idGrupo) async{
+    try{
+      final response = await super.getHttp(endPoint + "/user/" + idUser + "/" + idGrupo.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        setEquipos((json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList());
+      } on Exception catch(e){
+        print(e);
+      }
+    } on Exception catch(e) {
+      print(e);
+    }
+  }
+
+  getPlantel(int idEquipo) async{
+    try{
+      final response = await super.getHttp(endPoint + "/plantel/" + idEquipo.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        setJugadores((json.decode(response.body) as List).map((i) => JugadorPlantelDTO.fromJson(i)).toList());
+      } on Exception catch(e){
+        print(e);
+      }
+    } on Exception catch(e) {
+      print(e);
+    }
+  }
+
+  List<JugadorPlantelDTO> getJugadores(){
+    return this.jugadores;
+  }
+
+  setJugadores(List<JugadorPlantelDTO> jugadores){
+    this.jugadores = jugadores;
+    notifyListeners();
   }
 
   List<EquipoDTO> getEquipos(){
