@@ -35,87 +35,89 @@ class AsistentesActivityState extends State<AsistentesActivity> {
     Provider.of<ProvinciasProvider>(context, listen: false).getAll();
     Provider.of<CampeonatosProvider>(context, listen: false).getAll();
     Provider.of<PersonasProvider>(context, listen: false).getAll();
-    Provider.of<AsistentesProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    paises = Provider.of<PaisesProvider>(context).getPaises();
-    provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
-    campeonatos = Provider.of<CampeonatosProvider>(context).getCampeonatos();
-    List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
-    List<AsistenteDTO> asistentes = Provider.of<AsistentesProvider>(context).getAsistentes();
-
-    Widget list = CircularProgress();
-    if(asistentes != null){
-      if(asistentes.isNotEmpty) {
-        if(personas != null && personas.isNotEmpty) {
-          for (AsistenteDTO asistente in asistentes) {
-            for (PersonaDTO persona in personas) {
-              if (asistente.idPersona == persona.idPersona) {
-                asistente.personaDTO = persona;
-                for(PaisDTO pais in paises){
-                  if(asistente.personaDTO.idPais == pais.idPais){
-                    asistente.personaDTO.paisDTO = pais;
-
-                    for(ProvinciaDTO prov in provincias){
-                      if(asistente.personaDTO.idPais == prov.idPais &&
-                          asistente.personaDTO.idProvincia == prov.idProvincia){
-                        asistente.personaDTO.provinciaDTO = prov;
-                        break;
-                      }
-                    }
-
-                    break;
-                  }
-                }
-                break;
-              }
-            }
-          }
-
-          if(campeonatos != null && campeonatos.isNotEmpty) {
+    return Consumer<AsistentesProvider>(builder: (context, value, child) {
+      Widget widget;
+      if(value.isLoading){
+        widget = CircularProgress();
+      } else {
+        paises = Provider.of<PaisesProvider>(context).getPaises();
+        provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
+        campeonatos = Provider.of<CampeonatosProvider>(context).getCampeonatos();
+        List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
+        List<AsistenteDTO> asistentes = value.asistentes;
+        if(asistentes != null && asistentes.isNotEmpty) {
+          if(personas != null && personas.isNotEmpty) {
             for (AsistenteDTO asistente in asistentes) {
-              for (CampeonatoDTO campeonato in campeonatos) {
-                if (asistente.idCampeonato == campeonato.idCampeonato) {
-                  asistente.campeonatoDTO = campeonato;
+              for (PersonaDTO persona in personas) {
+                if (asistente.idPersona == persona.idPersona) {
+                  asistente.personaDTO = persona;
+                  for(PaisDTO pais in paises){
+                    if(asistente.personaDTO.idPais == pais.idPais){
+                      asistente.personaDTO.paisDTO = pais;
+
+                      for(ProvinciaDTO prov in provincias){
+                        if(asistente.personaDTO.idPais == prov.idPais &&
+                            asistente.personaDTO.idProvincia == prov.idProvincia){
+                          asistente.personaDTO.provinciaDTO = prov;
+                          break;
+                        }
+                      }
+
+                      break;
+                    }
+                  }
                   break;
                 }
               }
             }
+
+            if(campeonatos != null && campeonatos.isNotEmpty) {
+              for (AsistenteDTO asistente in asistentes) {
+                for (CampeonatoDTO campeonato in campeonatos) {
+                  if (asistente.idCampeonato == campeonato.idCampeonato) {
+                    asistente.campeonatoDTO = campeonato;
+                    break;
+                  }
+                }
+              }
+            }
+
+            widget= ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: asistentes.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Center(child: Text('${asistentes[index].personaDTO.nombre}')),
+                  subtitle: Center(child: Text('${asistentes[index].personaDTO.idTipoDoc.toString() + " - " +  asistentes[index].personaDTO.nroDoc.toString()}')),
+                  onTap: () => editEntity(context, asistentes[index]),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            );
           }
-
-          list= ListView.separated(
-            padding: const EdgeInsets.all(8),
-            itemCount: asistentes.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Center(child: Text('${asistentes[index].personaDTO.nombre}')),
-                subtitle: Center(child: Text('${asistentes[index].personaDTO.idTipoDoc.toString() + " - " +  asistentes[index].personaDTO.nroDoc.toString()}')),
-                onTap: () => editEntity(context, asistentes[index]),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) => const Divider(),
-          );
+        } else {
+          widget = WithoutData();
         }
-      } else {
-        list = WithoutData();
       }
-    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Asistentes'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-    );
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Asistentes'),
+        ),
+        body: widget,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newEntity(context);
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightBlueAccent,
+        ),
+      );
+    });
   }
 
   editEntity(final BuildContext context, AsistenteDTO asistenteDTO){
@@ -311,11 +313,8 @@ class AsistentesFormState extends State<AsistentesForm>{
       asistenteDTO.idPersona = int.parse(value);
       asistenteDTO.idCampeonato = campeonatoValue.idCampeonato;
       Provider.of<AsistentesProvider>(context, listen: false).save(asistenteDTO).then((value) {
-        print(value);
-        Provider.of<AsistentesProvider>(context, listen: false).getAll();
         Navigator.pop(context);
       });
-
     });
   }
 }

@@ -6,15 +6,14 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:ag/enviroments/desa.dart';
-import 'package:ag/network/model/dtos.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Counter value should be incremented', () async {
     new Dev();
-
-    List<CampeonatoDTO> campeonatos;
     /*
+    List<CampeonatoDTO> campeonatos;
+
     Provider.of<CampeonatosProvider>(context).getAll().then((value) => campeonatos = value);
     print(campeonatos.toString());
 

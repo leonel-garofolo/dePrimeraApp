@@ -7,6 +7,10 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/campeonatos";
 class CampeonatosProvider extends API with ChangeNotifier {
+  bool isLoading;
+  CampeonatosProvider(){
+    getAll();
+  }
 
   List<CampeonatoDTO> campeonatos;
   List<PartidosFromDateDTO> partidos;
@@ -14,11 +18,15 @@ class CampeonatosProvider extends API with ChangeNotifier {
   List<SancionesJugadoresFromCampeonatoDTO> sancionesJugadores;
 
   getAll() async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setCampeonatos((json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList());
+        this.campeonatos= (json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e) {
         print(e);
       }
@@ -28,11 +36,15 @@ class CampeonatosProvider extends API with ChangeNotifier {
   }
 
   getCampeonatoFromUser(String idUser, int idGrupo) async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint + "/user/" + idUser + "/" + idGrupo.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setCampeonatos((json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList());
+        this.campeonatos= (json.decode(response.body) as List).map((i) => CampeonatoDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e) {
         print(e);
       }
@@ -43,11 +55,6 @@ class CampeonatosProvider extends API with ChangeNotifier {
 
   List<CampeonatoDTO> getCampeonatos(){
     return campeonatos;
-  }
-
-  setCampeonatos(List<CampeonatoDTO> campeonatos){
-    this.campeonatos= campeonatos;
-    notifyListeners();
   }
 
   Future<CampeonatoDTO> get(int id) async{
@@ -134,18 +141,18 @@ class CampeonatosProvider extends API with ChangeNotifier {
     return this.sancionesJugadores;
   }
 
-  Future<String> save(CampeonatoDTO dto) async{
+  save(CampeonatoDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+        getAll();
       } on Exception {
-        return null;
+
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 

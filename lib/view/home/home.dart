@@ -6,14 +6,10 @@ import 'package:ag/providers/equiposProvider.dart';
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/authentication/login.dart';
 import 'package:ag/view/configuration.dart';
-import 'package:ag/view/home/campeonato/fixture.dart';
-import 'package:ag/view/home/campeonato/position.dart';
-import 'package:ag/view/home/campeonato/sancionesCampeonato.dart';
-import 'package:ag/view/home/encuentros/listPartidos.dart';
-import 'package:ag/view/home/equipo/historial.dart';
-import 'package:ag/view/home/equipo/plantel.dart';
+import 'package:ag/view/home/campeonatoTab.dart';
+import 'package:ag/view/home/encuentrosTab.dart';
+import 'package:ag/view/home/equipoTab.dart';
 import 'package:ag/view/home/menuDrawer.dart';
-import 'package:ag/view/home/tabCustom.dart';
 import 'package:ag/view/notification.dart';
 import 'package:ag/view/settings/profile.dart';
 import 'package:ag/view/settings/setting.dart';
@@ -43,21 +39,14 @@ class _HomeState extends State<Home>{
   int screenType;
 
   String title;
-  List<Tab> tabs;
   int campeonatoSelected;
   int equipoSelected;
-  int initPosition = 0;
-
   @override
   void initState() {
     super.initState();
     this._scaffoldKey = new GlobalKey<ScaffoldState>();
     this.screenType= 0;
     this.title = "Encuentros";
-    tabs = new List<Tab>();
-    tabs.add(new Tab(text: "Ayer",));
-    tabs.add(new Tab(text: "Hoy",));
-    tabs.add(new Tab(text: "Mañana",));
     Provider.of<SharedPreferencesProvider>(context, listen: false).getSharedPreference();
     Provider.of<EquiposProvider>(context, listen: false).getEquiposFromUser(this.widget.idUser, this.widget.idGrupo);
     Provider.of<CampeonatosProvider>(context, listen: false).getCampeonatoFromUser(this.widget.idUser, this.widget.idGrupo);
@@ -85,7 +74,18 @@ class _HomeState extends State<Home>{
 
   @override
   Widget build(BuildContext context) {
-    print(tabs.length);
+    Widget tabBuilder;
+    switch(this.screenType){
+      case 0:
+        tabBuilder = EncuentrosTab();
+        break;
+      case 1:
+        tabBuilder = CampeonatoTab(key: ValueKey('Campeonato' + this.campeonatoSelected.toString()), campeonatoSelected: this.campeonatoSelected,);
+        break;
+      case 2:
+        tabBuilder = EquipoTab(key: ValueKey('Equipo' + this.equipoSelected.toString()), equipoSelected: this.equipoSelected,);
+        break;
+    }
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
@@ -120,28 +120,7 @@ class _HomeState extends State<Home>{
               ),
             ]
         ),
-        body: SafeArea(
-          child: CustomTabView(
-            initPosition: initPosition,
-            itemCount: tabs.length,
-            tabBuilder: (context, index) => tabs[index],
-            pageBuilder: (context, index){
-
-              Widget screen = getScreenFromMode(-1, index);
-              if(screen != null) {
-                return getScreenFromMode(-1, index);
-              }
-              return Center(child: Text("Cargando"),);
-            },
-            onPositionChange: (index){
-              if(index != null){
-                print('current position: $index');
-                initPosition = index;
-              }
-            },
-            onScroll: (position) => print('$position'),
-          ),
-        ),
+        body: tabBuilder,
 
         drawer: new MenuDrawer(
             this.widget.idGrupo,
@@ -149,30 +128,6 @@ class _HomeState extends State<Home>{
             openPath
         )
     );
-  }
-
-  showGames(int day) {
-    return ListPartidos(day);
-  }
-
-  loadFixture(){
-    return FixtureCampeonato(campeonatoSelected);
-  }
-
-  loadPosition(){
-    return PosicionesCampeonatos(campeonatoSelected);
-  }
-
-  loadSanciones(){
-    return SancionesCampeonatos(campeonatoSelected);
-  }
-
-  loadHistorial(){
-    return EquipoHistorial(equipoSelected);
-  }
-
-  loadPlantel(){
-    return EquipoPlantel(equipoSelected);
   }
 
   toggleDrawer() async {
@@ -189,11 +144,6 @@ class _HomeState extends State<Home>{
       case "LIGA":
         setState(() {
           this.screenType= 1;
-          tabs.clear();
-          tabs.add(new Tab(text: "Fixture",));
-          tabs.add(new Tab(text: "Posiciones",));
-          tabs.add(new Tab(text: "Sanciones",));
-
           title= campeonatoDTO.descripcion;
           campeonatoSelected = campeonatoDTO.idCampeonato;
           equipoSelected = 0;
@@ -203,10 +153,6 @@ class _HomeState extends State<Home>{
       case "DAILY":
         setState(() {
           this.screenType= 0;
-          tabs.clear();
-          tabs.add(new Tab(text: "Ayer",));
-          tabs.add(new Tab(text: "Hoy",));
-          tabs.add(new Tab(text: "Mañana",));
           title= "Encuentros";
           campeonatoSelected = 0;
           equipoSelected = 0;
@@ -246,47 +192,10 @@ class _HomeState extends State<Home>{
   showEquiposDetail(BuildContext context, int equipoSelected, String equipoNombre) {
     setState(() {
       this.screenType= 2;
-      tabs.clear();
-      tabs.add(new Tab(text: "Campana",));
-      tabs.add(new Tab(text: "Plantel",));
       this.title= equipoNombre;
       this.campeonatoSelected = 0;
       this.equipoSelected = equipoSelected;
     });
-  }
-
-  Widget getScreenFromMode(int day, int index) {
-    Widget screen;
-    switch(this.screenType){
-      case 0:
-        screen = showGames(day);
-        break;
-      case 1:
-        switch(index){
-          case 0:
-            screen = loadFixture();
-            break;
-          case 1:
-            screen = loadPosition();
-            break;
-          case 2:
-            screen = loadSanciones();
-            break;
-        }
-        break;
-      case 2:
-        switch(index){
-          case 0:
-            screen = loadHistorial();
-            break;
-          case 1:
-            screen = loadPlantel();
-            break;
-        }
-        break;
-
-    }
-    return screen;
   }
 }
 

@@ -7,15 +7,24 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/equipos";
 class EquiposProvider extends API with ChangeNotifier  {
+
+  EquiposProvider(){
+    getAll();
+  }
+  bool isLoading;
   List<JugadorPlantelDTO> jugadores;
   List<EquipoDTO> equipos;
 
   getAll() async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setEquipos((json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList());
+        this.equipos = (json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList();
+        this.isLoading=false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);      
       }
@@ -25,11 +34,15 @@ class EquiposProvider extends API with ChangeNotifier  {
   }
 
   getEquiposFromUser(String idUser, int idGrupo) async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint + "/user/" + idUser + "/" + idGrupo.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setEquipos((json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList());
+        this.equipos = (json.decode(response.body) as List).map((i) => EquipoDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);
       }
@@ -39,11 +52,15 @@ class EquiposProvider extends API with ChangeNotifier  {
   }
 
   getPlantel(int idEquipo) async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint + "/plantel/" + idEquipo.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setJugadores((json.decode(response.body) as List).map((i) => JugadorPlantelDTO.fromJson(i)).toList());
+        this.jugadores = (json.decode(response.body) as List).map((i) => JugadorPlantelDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);
       }
@@ -56,18 +73,8 @@ class EquiposProvider extends API with ChangeNotifier  {
     return this.jugadores;
   }
 
-  setJugadores(List<JugadorPlantelDTO> jugadores){
-    this.jugadores = jugadores;
-    notifyListeners();
-  }
-
   List<EquipoDTO> getEquipos(){
     return this.equipos;
-  }
-
-  setEquipos(List<EquipoDTO> equipos){
-    this.equipos = equipos;
-    notifyListeners();
   }
 
 
@@ -86,33 +93,33 @@ class EquiposProvider extends API with ChangeNotifier  {
     }
   }
 
-  Future<String> save(EquipoDTO dto) async{
+  save(EquipoDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print( response.body);
+        getAll();
       } on Exception {
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<String> delete(int id) async{
+  delete(int id) async{
     try{
       final response = await super.deleteHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print( response.body);
+        getAll();
       } on Exception {
-        return null;
+
       }
     } on Exception catch(e) {
       print(e);
-      return null;
+
     }
   }
 }

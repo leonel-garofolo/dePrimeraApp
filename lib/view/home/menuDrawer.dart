@@ -14,8 +14,6 @@ class MenuDrawer extends StatelessWidget {
   final String profileUserImage = 'assets/images/profileUserImage.png';
   @override
   Widget build(BuildContext context) {
-
-
     List<Widget> items = new List<Widget>();
     if (campeonatosDTO != null && campeonatosDTO.isEmpty) {
       return NavDrawer(items);

@@ -6,14 +6,24 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/arbitros";
 class ArbitrosProvider extends API with ChangeNotifier {
+
+  ArbitrosProvider(){
+    getAll();
+  }
+
+  bool isLoading;
   List<ArbitroDTO> arbitros;
 
    getAll() async{
+     this.isLoading = true;
+     notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setArbitros((json.decode(response.body) as List).map((i) => ArbitroDTO.fromJson(i)).toList());
+        this.arbitros = (json.decode(response.body) as List).map((i) => ArbitroDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);
         return null;
@@ -24,42 +34,37 @@ class ArbitrosProvider extends API with ChangeNotifier {
     }
   }
 
-  setArbitros(List<ArbitroDTO> arbitros){
-    this.arbitros = arbitros;
-    notifyListeners();
-  }
-
   getArbitros(){
     return this.arbitros;
   }
 
-  Future<String> save(ArbitroDTO dto) async{
+  save(ArbitroDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+        getAll();
       } on Exception {
-        return null;
+
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<String> delete(int id) async{
+  delete(int id) async{
     try{
       final response = await super.deleteHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+        getAll();
       } on Exception {
-        return null;
+
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 }

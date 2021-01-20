@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class CardMenu extends StatelessWidget{
   CardMenu({this.title, this.count});

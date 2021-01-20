@@ -10,16 +10,14 @@ class FieldDatePicker extends StatelessWidget{
   final String label;
   @required
   final ValueChanged<DateTime> valueChanged;
-  DateTime value;
-  bool enabled;
+  @required
+  final DateTime value;
+  @required
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat.yMd(Intl.defaultLocale);
-    if(value == null)
-      value = DateTime.now();
-    if(enabled == null)
-      enabled = true;
     return InkWell(
       onTap: () {
         showDatePicker(
@@ -32,7 +30,7 @@ class FieldDatePicker extends StatelessWidget{
         });
       },
       child: InputDecorator(
-        decoration: InputDecoration(labelText: label, enabled: enabled),
+        decoration: InputDecoration(labelText: label, enabled: enabled == null? true : enabled),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           mainAxisSize: MainAxisSize.max,

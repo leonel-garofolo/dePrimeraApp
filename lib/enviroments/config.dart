@@ -19,6 +19,10 @@ import 'package:ag/providers/provinciasProvider.dart';
 import 'package:ag/providers/queryProvider.dart';
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/providers/userProvider.dart';
+import 'package:ag/view/configuraciones/arbitros.dart';
+import 'package:ag/view/configuraciones/asistentes.dart';
+import 'package:ag/view/configuraciones/campeonatos.dart';
+import 'package:ag/view/configuraciones/jugadores.dart';
 import 'package:ag/view/configuraciones/ligas.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/widgets.dart';
@@ -51,12 +55,26 @@ class Config {
           ChangeNotifierProvider(
               create: (_) => AppGruposProvider()
           ),
-          ChangeNotifierProvider(create: (_) => ArbitrosProvider()),
-          ChangeNotifierProvider(create: (_) => AsistentesProvider()),
+          ChangeNotifierProvider(
+              create: (_) => ArbitrosProvider(),
+              child: ArbitrosActivity(),
+          ),
+          ChangeNotifierProvider(
+              create: (_) => AsistentesProvider(),
+              child: AsistentesActivity(),
+          ),
           ChangeNotifierProvider(create: (_) => AuthenticationProvider()),
-          ChangeNotifierProvider(create: (_) => CampeonatosProvider()),
-          ChangeNotifierProvider(create: (_) => EquiposProvider()),
-          ChangeNotifierProvider(create: (_) => JugadoresProvider()),
+          ChangeNotifierProvider(
+              create: (_) => CampeonatosProvider(),
+              child: CampeonatosActivity(),
+          ),
+          ChangeNotifierProvider(
+              create: (_) => EquiposProvider()
+          ),
+          ChangeNotifierProvider(
+              create: (_) => JugadoresProvider(),
+              child: JugadoresActivity(),
+          ),
           ChangeNotifierProvider(
               create: (_) => LigaProvider(),
               child: LigasActivity(),
@@ -71,6 +89,7 @@ class Config {
           ChangeNotifierProvider(create: (_) => QueryProvider()),
           ChangeNotifierProvider(create: (_) => ComentariosProvider()),
           ChangeNotifierProvider(create: (_) => SharedPreferencesProvider()),
+          ChangeNotifierProvider(create: (_) => PartidosProvider()),
         ],
         child: DePrimeraApp(this),
       ));

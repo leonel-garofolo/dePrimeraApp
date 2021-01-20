@@ -6,15 +6,20 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/partidos";
 class PartidosProvider extends API with ChangeNotifier  {
+  bool isLoading;
   List<PartidosFromDateDTO> partidosView;
   List<PartidoDTO> partidos;
 
   getAll() async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setPartidos((json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList());
+        this.partidos = (json.decode(response.body) as List).map((i) => PartidoDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e) {
         print(e);
       }
@@ -23,21 +28,23 @@ class PartidosProvider extends API with ChangeNotifier  {
     }
   }
 
-  setPartidos(List<PartidoDTO> partidos){
-    this.partidos = partidos;
-    notifyListeners();
-  }
-
   List<PartidoDTO> getPartidos(){
     return this.partidos;
   }
 
   getPartidosFromEquipo(int idEquipo) async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint + "/equipo/" + idEquipo.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        setPartidosView((json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList());
+        await Future.delayed(Duration(milliseconds: 3000), () {
+          this.partidosView = (json.decode(response.body) as List).map((i) => PartidosFromDateDTO.fromJson(i)).toList();
+          this.isLoading = false;
+          notifyListeners();
+        });
+
       } on Exception {
         return null;
       }
@@ -45,11 +52,6 @@ class PartidosProvider extends API with ChangeNotifier  {
       print(e);
       return null;
     }
-  }
-
-  setPartidosView(List<PartidosFromDateDTO> partidos){
-    this.partidosView = partidos;
-    notifyListeners();
   }
 
   List<PartidosFromDateDTO> getPartidosView(){

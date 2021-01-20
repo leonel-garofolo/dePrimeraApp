@@ -223,7 +223,6 @@ class LigasFormState extends State<LigasForm>{
     ligaDTO.telefono = telefono.text;
     ligaDTO.telefonoContacto = telefonoContacto.text;
     Provider.of<LigaProvider>(context, listen: false).save(ligaDTO).then((value) {
-      Provider.of<LigaProvider>(context, listen: false).getAll();
       Navigator.pop(context);
     });
 

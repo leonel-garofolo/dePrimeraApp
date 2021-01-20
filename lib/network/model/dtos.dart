@@ -465,6 +465,7 @@ class JugadorDTO {
   int idPersona;
   PersonaDTO personaDTO;
   int idEquipo;
+  int nroCamiseta;
   EquipoDTO equipoDTO;
   bool deleteSelected;
   JugadorDTO({this.idJugador, this.idPersona, this.idEquipo, this.deleteSelected});
@@ -473,6 +474,7 @@ class JugadorDTO {
     idJugador = json['id_jugador'];
     idPersona = json['id_persona'];
     idEquipo = json['id_equipo'];
+    nroCamiseta = json['nro_camiseta'];
   }
 
   Map<String, dynamic> toJson() {
@@ -483,6 +485,7 @@ class JugadorDTO {
 
     data['id_persona'] = this.idPersona;
     data['id_equipo'] = this.idEquipo;
+    data['nro_camiseta'] = this.nroCamiseta;
     return data;
   }
 }

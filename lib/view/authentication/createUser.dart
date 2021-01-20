@@ -1,11 +1,7 @@
-
-
 import 'package:ag/network/model/dtos.dart';
 import 'package:ag/providers/authenticationProvider.dart';
-import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/component/fieldPassword.dart';
 import 'package:ag/view/component/fieldText.dart';
-import 'package:ag/view/home/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

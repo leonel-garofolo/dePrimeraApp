@@ -36,142 +36,145 @@ class JugadoresActivityState extends State<JugadoresActivity> {
     Provider.of<ProvinciasProvider>(context, listen: false).getAll();
     Provider.of<EquiposProvider>(context, listen: false).getAll();
     Provider.of<PersonasProvider>(context, listen: false).getAll();
-    Provider.of<JugadoresProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    paises = Provider.of<PaisesProvider>(context).getPaises();
-    provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
-    equipos = Provider.of<EquiposProvider>(context).getEquipos();
-    List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
-    List<JugadorDTO> jugadores = Provider.of<JugadoresProvider>(context).getJugadores();
-    Widget list = CircularProgress();
-    if(jugadores != null){
-      if(jugadores.isNotEmpty) {
-        if(personas != null && personas.isNotEmpty) {
-          for (JugadorDTO jugador in jugadores) {
-            for (PersonaDTO persona in personas) {
-              if (jugador.idPersona == persona.idPersona) {
-                jugador.personaDTO = persona;
-                for(PaisDTO pais in paises){
-                  if(jugador.personaDTO.idPais == pais.idPais){
-                    jugador.personaDTO.paisDTO = pais;
-
-                    for(ProvinciaDTO prov in provincias){
-                      if(jugador.personaDTO.idPais == prov.idPais &&
-                          jugador.personaDTO.idProvincia == prov.idProvincia){
-                        jugador.personaDTO.provinciaDTO = prov;
-                        break;
-                      }
-                    }
-
-                    break;
-                  }
-                }
-                break;
-              }
-            }
-          }
-
-          if(equipos != null && equipos.isNotEmpty) {
+    return Consumer<JugadoresProvider>(builder: (context, value, child) {
+      Widget widget ;
+      if(value.isLoading){
+        widget = CircularProgress();
+      } else {
+        paises = Provider.of<PaisesProvider>(context).getPaises();
+        provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
+        equipos = Provider.of<EquiposProvider>(context).getEquipos();
+        List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
+        List<JugadorDTO> jugadores = value.jugadores;
+        if(jugadores != null && jugadores.isNotEmpty) {
+          if(personas != null && personas.isNotEmpty) {
             for (JugadorDTO jugador in jugadores) {
-              for (EquipoDTO equipo in equipos) {
-                if (jugador.idEquipo == equipo.idEquipo) {
-                  jugador.equipoDTO = equipo;
+              for (PersonaDTO persona in personas) {
+                if (jugador.idPersona == persona.idPersona) {
+                  jugador.personaDTO = persona;
+                  for(PaisDTO pais in paises){
+                    if(jugador.personaDTO.idPais == pais.idPais){
+                      jugador.personaDTO.paisDTO = pais;
+
+                      for(ProvinciaDTO prov in provincias){
+                        if(jugador.personaDTO.idPais == prov.idPais &&
+                            jugador.personaDTO.idProvincia == prov.idProvincia){
+                          jugador.personaDTO.provinciaDTO = prov;
+                          break;
+                        }
+                      }
+
+                      break;
+                    }
+                  }
                   break;
                 }
               }
             }
-          }
 
-          Widget deleteModeWidget = Container();
-
-          list= ListView.separated(
-            padding: const EdgeInsets.all(8),
-            itemCount: jugadores.length,
-            itemBuilder: (BuildContext context, int index) {
-              if(_deleteMode){
-                deleteModeWidget =Checkbox(
-                    value: jugadores[index].deleteSelected,
-                    onChanged: (newValue){
-                      setState(() {
-                        jugadores[index].deleteSelected = newValue;
-                        print(jugadores[index].deleteSelected);
-                      });
-                    });
-              } else {
-                deleteModeWidget = Container();
+            if(equipos != null && equipos.isNotEmpty) {
+              for (JugadorDTO jugador in jugadores) {
+                for (EquipoDTO equipo in equipos) {
+                  if (jugador.idEquipo == equipo.idEquipo) {
+                    jugador.equipoDTO = equipo;
+                    break;
+                  }
+                }
               }
-
-              return InkWell(
-                onLongPress: (){
-                  setState(() {
-                    _deleteMode = true;
-                  });
-                },
-                onTap: () => editEntity(context, jugadores[index]),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${jugadores[index].personaDTO.nombre}', style: TextStyle(fontSize: 20),)),
-                        Container(child: Text('${jugadores[index].personaDTO.idTipoDoc} ${jugadores[index].personaDTO.nroDoc}', style: TextStyle(fontSize: 12),))
-                      ],
-                    ),
-                    deleteModeWidget
-
-                  ],
-                ),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) => const Divider(),
-          );
-        }
-      } else {
-        list = WithoutData();
-      }
-    }
-
-    List<IconButton> icons = new List<IconButton>();
-    if(_deleteMode) {
-      icons.add(IconButton(
-        icon: Icon(Icons.close),
-        onPressed: () {
-          setState(() {
-            _deleteMode = false;
-            for (JugadorDTO jugador in jugadores) {
-              jugador.deleteSelected = false;
             }
-          });
-        },
-      ));
 
-      icons.add(IconButton(
-        icon: Icon(Icons.delete),
-        onPressed: () {
-          for (JugadorDTO jugador in jugadores) {
-            print(jugador.idJugador.toString() + "| " +
-                jugador.deleteSelected.toString());
+            Widget deleteModeWidget = Container();
+
+            widget= ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: jugadores.length,
+              itemBuilder: (BuildContext context, int index) {
+                if(_deleteMode){
+                  deleteModeWidget =Checkbox(
+                      value: jugadores[index].deleteSelected,
+                      onChanged: (newValue){
+                        setState(() {
+                          jugadores[index].deleteSelected = newValue;
+                          print(jugadores[index].deleteSelected);
+                        });
+                      });
+                } else {
+                  deleteModeWidget = Container();
+                }
+
+                return InkWell(
+                  onLongPress: (){
+                    setState(() {
+                      _deleteMode = true;
+                    });
+                  },
+                  onTap: () => editEntity(context, jugadores[index]),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        children: [
+                          Container(margin: EdgeInsets.only(left: 10, top: 5), child: Text('${jugadores[index].personaDTO.nombre}', style: TextStyle(fontSize: 20),)),
+                          Container(child: Text('${jugadores[index].personaDTO.idTipoDoc} ${jugadores[index].personaDTO.nroDoc}', style: TextStyle(fontSize: 12),))
+                        ],
+                      ),
+                      deleteModeWidget
+
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            );
           }
-        },
-      ));
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Jugadores'),
-        actions: icons,
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-    );
+        } else {
+          widget = WithoutData();
+        }
+      }
+
+      List<IconButton> icons = new List<IconButton>();
+      if(_deleteMode) {
+        icons.add(IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            setState(() {
+              _deleteMode = false;
+              for (JugadorDTO jugador in value.jugadores) {
+                jugador.deleteSelected = false;
+              }
+            });
+          },
+        ));
+
+        icons.add(IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: () {
+            for (JugadorDTO jugador in value.jugadores) {
+              print(jugador.idJugador.toString() + "| " +
+                  jugador.deleteSelected.toString());
+            }
+          },
+        ));
+      }
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Jugadores'),
+          actions: icons,
+        ),
+        body: widget,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newEntity(context);
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightBlueAccent,
+        ),
+      );
+    },);
   }
 
   editEntity(final BuildContext context, JugadorDTO jugadorDTO){

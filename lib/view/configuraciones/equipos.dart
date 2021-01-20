@@ -21,45 +21,52 @@ class EquiposActivityState extends State<EquiposActivity> {
   @override
   void initState() {
     super.initState();
-    Provider.of<EquiposProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<EquipoDTO> equipos = Provider.of<EquiposProvider>(context).getEquipos();
+      return
+        Consumer<EquiposProvider>(builder: (context, value, child) {
+          Widget widget;
+          if(value.isLoading){
+            widget = CircularProgress();
+          } else {
+            List<EquipoDTO> equipos = value.equipos;
 
-    Widget list = CircularProgress();
-    if(equipos != null){
-      if(equipos.isNotEmpty){
-        list= ListView.separated(
-          padding: const EdgeInsets.all(8),
-          itemCount: equipos.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Center(child: Text('${equipos[index].nombre}')),
-              onTap: () => editEntity(context, equipos[index]),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) => const Divider(),
-        );
-      } else {
-        list = WithoutData();
-      }
-    }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Equipos'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-    );
+            if(equipos != null){
+              if(equipos.isNotEmpty){
+                widget= ListView.separated(
+                  padding: const EdgeInsets.all(8),
+                  itemCount: equipos.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: Center(child: Text('${equipos[index].nombre}')),
+                      onTap: () => editEntity(context, equipos[index]),
+                    );
+                  },
+                  separatorBuilder: (BuildContext context, int index) => const Divider(),
+                );
+              } else {
+                widget = WithoutData();
+              }
+            }
+          }
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Equipos'),
+            ),
+            body: widget,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                newEntity(context);
+              },
+              child: Icon(Icons.add),
+              backgroundColor: Colors.lightBlueAccent,
+            ),
+          );
+      },);
   }
 
   editEntity(final BuildContext context, EquipoDTO equipoDTO){

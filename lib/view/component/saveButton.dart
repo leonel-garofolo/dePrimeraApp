@@ -9,7 +9,7 @@ class ButtonRequest extends StatelessWidget{
 
   final String text;
   final VoidCallback onPressed;
-  TextStyle style = TextStyle(fontSize: 20.0);
+  final TextStyle style = TextStyle(fontSize: 20.0);
 
   @override
   Widget build(BuildContext context) {

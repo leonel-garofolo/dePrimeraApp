@@ -25,58 +25,63 @@ class CampeonatosActivityState extends State<CampeonatosActivity> {
   @override
   void initState() {
     super.initState();
-    Provider.of<LigaProvider>(context, listen: false).getAll();
-    Provider.of<CampeonatosProvider>(context, listen: false).getAll();
+    Future.microtask(() => Provider.of<LigaProvider>(context, listen: false).getAll());
   }
 
   @override
   Widget build(BuildContext context) {
-    ligas = Provider.of<LigaProvider>(context).getLigas();
-    List<CampeonatoDTO> tempCampeonatos= Provider.of<CampeonatosProvider>(context).getCampeonatos();
-    for(CampeonatoDTO campeonato in tempCampeonatos){
-      for(LigaDTO liga in ligas){
-        if(campeonato.idLiga == liga.idLiga){
-          campeonato.ligaDTO = liga;
-          break;
+    return Consumer<CampeonatosProvider>(
+      builder: (context, provider, child) {
+        Widget widget;
+        if(provider.isLoading){
+          widget = CircularProgress();
+        } else {
+          ligas = Provider.of<LigaProvider>(context).getLigas();
+          List<CampeonatoDTO> tempCampeonatos= provider.campeonatos;
+          for(CampeonatoDTO campeonato in tempCampeonatos){
+            for(LigaDTO liga in ligas){
+              if(campeonato.idLiga == liga.idLiga){
+                campeonato.ligaDTO = liga;
+                break;
+              }
+            }
+          }
+          campeonatos = tempCampeonatos;
+
+          if(campeonatos != null){
+            if(campeonatos.isNotEmpty){
+              widget= ListView.separated(
+                padding: const EdgeInsets.all(8),
+                itemCount: campeonatos.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    title: Center(child: Text('${campeonatos[index].descripcion}')),
+                    subtitle: Center(child: Text('${campeonatos[index].ligaDTO.nombre}')),
+                    onTap: () => editEntity(context, campeonatos[index]),
+                  );
+                },
+                separatorBuilder: (BuildContext context, int index) => const Divider(),
+              );
+            } else {
+              widget = WithoutData();
+            }
+          }
         }
-      }
-    }
-    campeonatos = tempCampeonatos;
-
-    Widget list = CircularProgress();
-    if(campeonatos != null){
-      if(campeonatos.isNotEmpty){
-        list= ListView.separated(
-          padding: const EdgeInsets.all(8),
-          itemCount: campeonatos.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ListTile(
-              title: Center(child: Text('${campeonatos[index].descripcion}')),
-              subtitle: Center(child: Text('${campeonatos[index].ligaDTO.nombre}')),
-              onTap: () => editEntity(context, campeonatos[index]),
-            );
-          },
-          separatorBuilder: (BuildContext context, int index) => const Divider(),
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Campeonatos'),
+          ),
+          body: widget,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              newEntity(context);
+            },
+            child: Icon(Icons.add),
+            backgroundColor: Colors.lightBlueAccent,
+          ),
         );
-      } else {
-        list = WithoutData();
-      }
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Campeonatos'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
+      },
     );
-
   }
 
   editEntity(final BuildContext context, CampeonatoDTO campeonatoDTO){
@@ -158,7 +163,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
               ),
               FieldDatePicker(
                 label: "Fecha Desde",
-                value: fechaInicio,
+                value: fechaInicio == null? DateTime.now() : fechaInicio,
                 valueChanged: (date){
                   setState(() {
                     fechaInicio = date;
@@ -167,7 +172,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
               ),
               FieldDatePicker(
                 label: "Fecha Hasta",
-                value: fechaFin,
+                value: fechaFin == null? DateTime.now() : fechaFin,
                 valueChanged: (date){
                   setState(() {
                     fechaFin = date;
@@ -204,7 +209,6 @@ class CampeonatosFormState extends State<CampeonatosForm>{
     campeonatoDTO.fechaFin = fechaFin;
 
     Provider.of<CampeonatosProvider>(context, listen: false).save(campeonatoDTO).then((value) {
-      Provider.of<CampeonatosProvider>(context, listen: false).getAll();
       Navigator.pop(context);
     });
   }

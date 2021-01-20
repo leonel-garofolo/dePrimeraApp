@@ -38,12 +38,6 @@ class LigaProvider extends API with ChangeNotifier  {
     return this.ligas;
   }
 
-  setLigas(List<LigaDTO> ligas){
-    this.ligas = ligas;
-    notifyListeners();
-  }
-
-
   Future<LigaDTO> get(int id) async{
     try{
       final response = await super.getHttp(endPoint + "/" + id.toString());
@@ -59,33 +53,31 @@ class LigaProvider extends API with ChangeNotifier  {
     }
   }
 
-  Future<String> save(LigaDTO dto) async{
+  save(LigaDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+        getAll();
       } on Exception {
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<String> delete(int id) async{
+ delete(int id) async{
     try{
       final response = await super.deleteHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+        getAll();
       } on Exception {
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 }

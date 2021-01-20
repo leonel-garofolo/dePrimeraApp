@@ -34,20 +34,22 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
     Provider.of<ProvinciasProvider>(context, listen: false).getAll();
     Provider.of<CampeonatosProvider>(context, listen: false).getAll();
     Provider.of<PersonasProvider>(context, listen: false).getAll();
-    Provider.of<ArbitrosProvider>(context, listen: false).getAll();
   }
 
   @override
   Widget build(BuildContext context) {
-    paises = Provider.of<PaisesProvider>(context).getPaises();
-    provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
-    campeonatos = Provider.of<CampeonatosProvider>(context).getCampeonatos();
-    List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
-    List<ArbitroDTO> arbitros = Provider.of<ArbitrosProvider>(context).getArbitros();
+    return Consumer<ArbitrosProvider>(builder: (context, value, child) {
+      Widget widget;
+      if(value.isLoading){
+        widget = CircularProgress();
+      } else {
+        paises = Provider.of<PaisesProvider>(context).getPaises();
+        provincias = Provider.of<ProvinciasProvider>(context).getProvincias();
+        campeonatos = Provider.of<CampeonatosProvider>(context).getCampeonatos();
+        List<PersonaDTO> personas = Provider.of<PersonasProvider>(context).getPersonas();
+        List<ArbitroDTO> arbitros = value.arbitros;
 
-    Widget list = CircularProgress();
-    if(arbitros != null){
-        if(arbitros.isNotEmpty) {
+        if(arbitros != null && arbitros.isNotEmpty) {
           if(personas != null && personas.isNotEmpty) {
             for (ArbitroDTO arbitro in arbitros) {
               for (PersonaDTO persona in personas) {
@@ -84,7 +86,7 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
               }
             }
 
-            list= ListView.separated(
+            widget= ListView.separated(
               padding: const EdgeInsets.all(8),
               itemCount: arbitros.length,
               itemBuilder: (BuildContext context, int index) {
@@ -98,23 +100,28 @@ class ArbitrosActivityState extends State<ArbitrosActivity> {
             );
           }
         } else {
-            list = WithoutData();
-          }
+          widget = WithoutData();
+        }
       }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Arbitros'),
-      ),
-      body: list,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          newEntity(context);
-        },
-        child: Icon(Icons.add),
-        backgroundColor: Colors.lightBlueAccent,
-      ),
-    );
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Arbitros'),
+        ),
+        body: widget,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newEntity(context);
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightBlueAccent,
+        ),
+      );
+
+    } ,);
+
+
   }
 
   editEntity(final BuildContext context, ArbitroDTO arbitroDTO){
