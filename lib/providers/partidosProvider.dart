@@ -103,33 +103,46 @@ class PartidosProvider extends API with ChangeNotifier  {
     }
   }
 
-  Future<String> save(PartidoDTO dto) async{
+  save(PartidoDTO dto) async{
     try{
       final response = await super.postHttp(endPoint, dto);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
+
       } on Exception {
-        return null;
+
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 
-  Future<String> delete(int id) async{
+  Future<bool> saveStatePartido(PartidoResultDTO dto) async{
+    try{
+      final response = await super.postHttp(endPoint + '/result', dto);
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        return response.body == "insertado"? true:false;
+      } on Exception {
+        return false;
+      }
+    } on Exception catch(e) {
+      print(e);
+      return false;
+    }
+  }
+
+  delete(int id) async{
     try{
       final response = await super.deleteHttp(endPoint + "/" + id.toString());
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return response.body;
+        print(response.body);
       } on Exception {
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 }

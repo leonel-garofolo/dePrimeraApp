@@ -16,6 +16,7 @@ class CampeonatosProvider extends API with ChangeNotifier {
   List<PartidosFromDateDTO> partidos;
   List<EquipoTablePosDTO> equipos;
   List<SancionesJugadoresFromCampeonatoDTO> sancionesJugadores;
+  List<CampeonatosGoleadoresDTO> goleadores;
 
   getAll() async{
     this.isLoading = true;
@@ -139,6 +140,28 @@ class CampeonatosProvider extends API with ChangeNotifier {
 
   List<SancionesJugadoresFromCampeonatoDTO> getSancionesJugadores(){
     return this.sancionesJugadores;
+  }
+
+  getTableGoleadores(int id) async{
+    this.isLoading = true;
+    notifyListeners();
+    try{
+      final response = await super.getHttp(endPoint + "/goleadores/" + id.toString());
+      try{
+        // Si el servidor devuelve una repuesta OK, parseamos el JSON
+        goleadores = (json.decode(response.body) as List).map((i) => CampeonatosGoleadoresDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
+      } on Exception catch(e) {
+        print(e);
+      }
+    } on Exception catch(e) {
+      print(e);
+    }
+  }
+
+  List<CampeonatosGoleadoresDTO> getGoleadores(){
+    return this.goleadores;
   }
 
   save(CampeonatoDTO dto) async{

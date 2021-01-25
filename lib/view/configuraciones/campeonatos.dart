@@ -2,6 +2,7 @@ import 'package:ag/providers/campeonatosProvider.dart';
 import 'package:ag/providers/ligaProvider.dart';
 import 'package:ag/network/model/dtos.dart';
 import 'package:ag/view/component/circularProgress.dart';
+import 'package:ag/view/component/fieldCheckBox.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldDatePicker.dart';
 import 'package:ag/view/component/fieldText.dart';
@@ -116,6 +117,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
   LigaDTO ligaValue;
   DateTime fechaInicio;
   DateTime fechaFin;
+  bool genFixture = false;
 
   @override
   Widget build(BuildContext context) {
@@ -127,6 +129,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
         fechaInicio = this.widget.campeonatoDTO.fechaInicio;
       if(fechaFin == null)
         fechaFin = this.widget.campeonatoDTO.fechaFin;
+      genFixture = this.widget.campeonatoDTO.genFixture;
     }
 
     return Scaffold(
@@ -179,6 +182,21 @@ class CampeonatosFormState extends State<CampeonatosForm>{
                   });
                 },
               ),
+              FieldCheckbox(
+                label: "Generar Fixture",
+                value: this.genFixture,
+                valueChanged:
+                  this.widget.campeonatoDTO != null && this.widget.campeonatoDTO.genFixture?
+                    null : (newValue){
+                  setState(() {
+                    if(this.widget.campeonatoDTO == null) {
+                      this.genFixture = newValue;
+                    } else {
+                      this.widget.campeonatoDTO.genFixture = newValue;
+                    }
+                  });
+                },
+              ),
               Container(height: 10,),
               ButtonRequest(
                   text: "Guardar",
@@ -207,6 +225,7 @@ class CampeonatosFormState extends State<CampeonatosForm>{
     campeonatoDTO.idLiga = ligaValue.idLiga;
     campeonatoDTO.fechaInicio = fechaInicio;
     campeonatoDTO.fechaFin = fechaFin;
+    campeonatoDTO.genFixture = genFixture;
 
     Provider.of<CampeonatosProvider>(context, listen: false).save(campeonatoDTO).then((value) {
       Navigator.pop(context);

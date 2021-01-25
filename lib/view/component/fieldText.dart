@@ -4,9 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FieldText extends StatelessWidget{
-  FieldText({this.label, this.controller});
+  FieldText({this.label, this.hint, this.controller});
 
+  @required
   final String label;
+
+  final String hint;
+
+  @required
   final TextEditingController controller;
 
   @override
@@ -15,7 +20,8 @@ class FieldText extends StatelessWidget{
       keyboardType: TextInputType.text,
       controller: this.controller,
       decoration: InputDecoration(
-          labelText: "${this.label}"
+          labelText: "${this.label}",
+          hintText: this.hint != null ? '' : this.hint
       ),
       validator: (value) {
         if (value.isEmpty) {

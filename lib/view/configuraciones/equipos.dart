@@ -1,7 +1,9 @@
 import 'package:ag/network/model/dtos.dart';
+import 'package:ag/providers/campeonatosProvider.dart';
 import 'package:ag/providers/equiposProvider.dart';
 import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldCheckBox.dart';
+import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldText.dart';
 import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/component/withoutData.dart';
@@ -98,63 +100,95 @@ class EquiposFormState extends State<EquiposForm>{
   final _formKey = GlobalKey<FormState>();
 
   final nombre = TextEditingController();
-  bool habilitado = false;
+  bool habilitado = true;
   final foto = TextEditingController();
+  CampeonatoDTO campeonatoSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => context.read<CampeonatosProvider>().getAll());
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(this.widget.equipoDTO != null){
-      nombre.text = this.widget.equipoDTO.nombre;
-      habilitado = this.widget.equipoDTO.habilitado;
-      //foto.text = this.widget.equipoDTO.foto;
-    }
+    return Consumer<CampeonatosProvider>(builder: (context, value, child) {
+      if(this.widget.equipoDTO != null){
+        nombre.text = this.widget.equipoDTO.nombre;
+        habilitado = this.widget.equipoDTO.habilitado;
+        //foto.text = this.widget.equipoDTO.foto;
+        if(this.widget.equipoDTO.idCampeonato != null){
+          for(CampeonatoDTO campeonatoDTO in value.campeonatos){
+            if(campeonatoDTO.idCampeonato == this.widget.equipoDTO.idCampeonato){
+              campeonatoSelected = campeonatoDTO;
+              break;
+            }
+          }
+        }
+      }
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text("${this.widget.equipoDTO != null? this.widget.equipoDTO.nombre : "Nuevo Equipo"}"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              Provider.of<EquiposProvider>(context, listen: false).delete(widget.equipoDTO.idEquipo);
-              Provider.of<EquiposProvider>(context, listen: false).getAll();
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.0),
-        child:Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              FieldText(
-                label: "Nombre",
-                controller: nombre,
-              ),
-              FieldCheckbox(
-                label: "Habilitado",
-                value: habilitado,
-                valueChanged: (newValue) {
-                  setState(() {
-                    habilitado = newValue;
-                  });
-                },
-              ),
-              Container(height: 10,),
-              ButtonRequest(
-                  text: "Guardar",
-                  onPressed: (){
-                    save();
-                  }
-              ),
-            ],
-          ),
-        ),),
-    );
+      return Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          title: Text("${this.widget.equipoDTO != null? this.widget.equipoDTO.nombre : "Nuevo Equipo"}"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                Provider.of<EquiposProvider>(context, listen: false).delete(widget.equipoDTO.idEquipo);
+                Provider.of<EquiposProvider>(context, listen: false).getAll();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(20.0),
+          child:Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                FieldText(
+                  label: "Nombre",
+                  controller: nombre,
+                ),
+                FieldCheckbox(
+                  label: "Habilitado",
+                  value: habilitado,
+                  valueChanged: (newValue) {
+                    setState(() {
+                      if(this.widget.equipoDTO != null){
+                        this.widget.equipoDTO.habilitado = newValue;
+                      } else {
+                        this.habilitado = newValue;
+                      }
+
+                    });
+                  },
+                ),
+                FieldComboBox(
+                  label: "Campeonato",
+                  itemList: value.campeonatos,
+                  itemValue: campeonatoSelected,
+                  onChange: (newValue){
+                    setState(() {
+                      campeonatoSelected = newValue;
+                    });
+                  },
+                ),
+                Container(height: 10,),
+                ButtonRequest(
+                    text: "Guardar",
+                    onPressed: (){
+                      save();
+                    }
+                ),
+              ],
+            ),
+          ),),
+      );
+    },);
   }
 
   save() async{
@@ -164,6 +198,7 @@ class EquiposFormState extends State<EquiposForm>{
     }
     equipoDTO.nombre = nombre.text;
     equipoDTO.habilitado = habilitado;
+    equipoDTO.idCampeonato = campeonatoSelected.idCampeonato;
 
     Provider.of<EquiposProvider>(context, listen: false).save(equipoDTO).then((value) {
       Provider.of<EquiposProvider>(context, listen: false).getAll();

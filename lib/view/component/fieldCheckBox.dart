@@ -17,6 +17,7 @@ class FieldCheckbox extends StatelessWidget{
         Checkbox(
           value: value,
           onChanged: valueChanged,
+
         )
       ],
     );

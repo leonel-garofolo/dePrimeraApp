@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/authentication/login.dart';
+import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -50,35 +51,35 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Container(
         child: Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            Opacity(
-              opacity: 0.5,
-              child: Image.asset('assets/images/sports.png'),
-            ),
-            Shimmer.fromColors(
-              period: Duration(milliseconds: 2000),
-              baseColor: Color(0xffffffff),
-              highlightColor: Color(0xff000000),
-              child: Container(
-                alignment: Alignment.bottomCenter,
-                padding: EdgeInsets.all(30.0),
-                child: Text(
-                  "De Primera",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 50.0,
-                    fontFamily: 'Pacifico',
-                  ),
+            Container(
+              alignment: Alignment.topCenter,
+              padding: EdgeInsets.only(top: 100.0),
+              child: Text(
+                "De Primera",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 50.0,
                 ),
               ),
-            )
+            ),
+            CircularProgress(),
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: EdgeInsets.only(bottom: 30.0),
+              child: Text(
+                "Proyecto: Garófolo Leonel",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18.0,
+                ),
+              ),
+            ),
           ],
         ),
       ),

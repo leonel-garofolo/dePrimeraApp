@@ -3,6 +3,7 @@ import 'package:ag/providers/equiposProvider.dart';
 import 'package:ag/providers/partidosProvider.dart';
 import 'package:ag/view/component/cardGame.dart';
 import 'package:ag/view/component/circularProgress.dart';
+import 'package:ag/view/home/encuentros/editPartidos.dart';
 import 'package:ag/view/home/tabCustom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,10 @@ class EquipoTabStatus extends State<EquipoTab>{
     super.initState();
     tabs.add(new Tab(text: "Campana",));
     tabs.add(new Tab(text: "Plantel",));
+    initLoad();
+  }
+
+  initLoad(){
     Future.microtask(() {
       context.read<PartidosProvider>().getPartidosFromEquipo(this.widget.equipoSelected);
       context.read<EquiposProvider>().getPlantel(this.widget.equipoSelected);
@@ -67,12 +72,15 @@ class EquipoTabStatus extends State<EquipoTab>{
                       itemCount: partidos.length,
                       itemBuilder: (BuildContext ctxt, int index) {
                         return CardGame(
+                          partidoId: partidos[index].idPartidos,
+                          partidosFromDateDTO: partidos[index],
                           championName: partidos[index].campeonatoName,
                           date: DateTime.now(),
                           localName: partidos[index].eLocalName,
                           localGoal:  partidos[index].resultadoLocal.toString(),
                           visitName:  partidos[index].eVisitName,
                           visitGoal: partidos[index].resultadoVisitante.toString(),
+                          edit: openEditPartidos,
                         );
                       }
                   );
@@ -148,5 +156,14 @@ class EquipoTabStatus extends State<EquipoTab>{
         break;
     }
     return widget;
+  }
+
+  openEditPartidos(BuildContext context, PartidosFromDateDTO partidosFromDateDTO) async{
+    bool received = await Navigator.push(context, MaterialPageRoute(
+        builder: (context) => EditPartidos(partidosFromDateDTO: partidosFromDateDTO,)
+    ));
+    if(received){
+      initLoad();
+    }
   }
 }

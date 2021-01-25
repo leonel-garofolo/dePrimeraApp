@@ -13,15 +13,19 @@ class SharedPreferencesProvider  with ChangeNotifier {
   int idGrupo;
 
   getSharedPreference() async {
-    this.logged = await getSHBoolValue(SH_IS_LOGGED);
-    this.userId = await getSHStringValue(SH_USER_ID);
-    this.userName = await getSHStringValue(SH_USER_NAME);
-    this.userSurName = await getSHStringValue(SH_USER_SURNAME);
-    this.userRol = await getSHStringValue(SH_USER_ROL);
-    this.userTel = await getSHStringValue(SH_USER_TEL);
-    this.idGrupo = await getSHIntValue(SH_USER_GRUPO);
+    try{
+      this.logged = await getSHBoolValue(SH_IS_LOGGED);
+      this.userId = await getSHStringValue(SH_USER_ID);
+      this.userName = await getSHStringValue(SH_USER_NAME);
+      this.userSurName = await getSHStringValue(SH_USER_SURNAME);
+      this.userRol = await getSHStringValue(SH_USER_ROL);
+      this.userTel = await getSHStringValue(SH_USER_TEL);
+      this.idGrupo = await getSHIntValue(SH_USER_GRUPO);
 
-    notifyListeners();
+      notifyListeners();
+    } on Exception catch(e){
+      print(e);
+    }
   }
 
   bool isLogged(){
@@ -111,12 +115,12 @@ class SharedPreferencesProvider  with ChangeNotifier {
 
   saveUserTelefono(String userTel) {
     this.userTel = userTel;
-    saveSHStringValue(SH_USER_ROL, userRol);
+    saveSHStringValue(SH_USER_TEL, userTel);
     notifyListeners();
   }
   saveUserPermiso(int idGrupo) {
     this.idGrupo = idGrupo;
-    saveSHIntegerValue(SH_USER_ROL, idGrupo);
+    saveSHIntegerValue(SH_USER_GRUPO, idGrupo);
     notifyListeners();
   }
 }

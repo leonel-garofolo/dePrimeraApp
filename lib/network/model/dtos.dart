@@ -92,6 +92,7 @@ class CampeonatoDTO extends ItemValue{
   String descripcion;
   DateTime fechaInicio;
   DateTime fechaFin;
+  bool genFixture;
 
   CampeonatoDTO(
       {this.idCampeonato,
@@ -99,7 +100,9 @@ class CampeonatoDTO extends ItemValue{
         this.idModelo,
         this.descripcion,
         this.fechaInicio,
-        this.fechaFin});
+        this.fechaFin,
+        this.genFixture
+      });
 
   CampeonatoDTO.fromJson(Map<String, dynamic> json) {
     idCampeonato = json['id_campeonato'];
@@ -108,6 +111,7 @@ class CampeonatoDTO extends ItemValue{
     descripcion = json['descripcion'];
     fechaInicio = DateTime.parse(json['fecha_inicio']);
     fechaFin = DateTime.parse(json['fecha_fin']);
+    genFixture = json['gen_fixture'] ;
   }
 
   Map<String, dynamic> toJson() {
@@ -118,6 +122,7 @@ class CampeonatoDTO extends ItemValue{
     data['descripcion'] = this.descripcion;
     data['fecha_inicio'] = this.fechaInicio.toIso8601String().contains("Z") ? this.fechaInicio.toIso8601String(): this.fechaInicio.toIso8601String() + "Z";
     data['fecha_fin'] = this.fechaFin.toIso8601String().contains("Z") ? this.fechaFin.toIso8601String(): this.fechaFin.toIso8601String() + "Z";
+    data['gen_fixture'] = this.genFixture;
     return data;
   }
   @override
@@ -126,27 +131,62 @@ class CampeonatoDTO extends ItemValue{
   }
 }
 
+class CampeonatosGoleadoresDTO {
+  int idJugador;
+  String equipo;
+  String nombre;
+  String apellido;
+  int goles;
+
+  CampeonatosGoleadoresDTO({
+    this.idJugador,
+    this.equipo,
+    this.nombre,
+    this.apellido,
+    this.goles
+  });
+
+  CampeonatosGoleadoresDTO.fromJson(Map<String, dynamic> json) {
+    idJugador = json['id_jugador'];
+    equipo = json['equipo'];
+    nombre = json['nombre'];
+    apellido = json['apellido'];
+    goles = json['goles'];
+  }
+}
+
 class EquipoDTO extends ItemValue{
   int idEquipo;
   bool habilitado;
   String nombre;
   Null foto;
+  CampeonatoDTO campeonatoDTO;
+  int idCampeonato;
 
   EquipoDTO(
-      {this.idEquipo, this.foto, this.habilitado, this.nombre});
+      {this.idEquipo, this.foto, this.habilitado, this.nombre, this.idCampeonato});
 
   EquipoDTO.fromJson(Map<String, dynamic> json) {
     foto = json['foto'];
     habilitado = json['habilitado'];
     idEquipo = json['id_equipo'];
     nombre = json['nombre'];
+    idCampeonato = json['id_campeonato'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['foto'] = this.foto;
+    if(this.idEquipo != null){
+      data['id_equipo'] = this.idEquipo;
+    }
+    if(this.idCampeonato != null){
+      data['id_campeonato'] = this.idCampeonato;
+    }
+    if(this.foto != null){
+      data['foto'] = this.foto;
+    }
     data['habilitado'] = this.habilitado;
-    data['id_equipo'] = this.idEquipo;
+
     data['nombre'] = this.nombre;
     return data;
   }
@@ -245,6 +285,8 @@ class PartidoDTO {
   int resultadoLocal;
   int resultadoVisitante;
   bool suspendido;
+  bool iniciado;
+  bool finalizado;
 
   PartidoDTO(
       {this.fechaEncuentro,
@@ -259,7 +301,10 @@ class PartidoDTO {
         this.observacion,
         this.resultadoLocal,
         this.resultadoVisitante,
-        this.suspendido});
+        this.suspendido,
+        this.iniciado,
+        this.finalizado
+      });
 
   PartidoDTO.fromJson(Map<String, dynamic> json) {
     fechaEncuentro = json['fecha_encuentro'];
@@ -279,6 +324,8 @@ class PartidoDTO {
     } else {
       suspendido = json['suspendido'].toLowerCase() == 'true';
     }
+    iniciado = json['iniciado'];
+    finalizado = json['finalizado'];
   }
 
   Map<String, dynamic> toJson() {
@@ -311,6 +358,9 @@ class PartidosFromDateDTO {
   int resultadoLocal;
   int resultadoVisitante;
   bool suspendido;
+  bool iniciado;
+  bool finalizado;
+  String motivo;
 
   PartidosFromDateDTO(
       {this.idPartidos,
@@ -321,7 +371,10 @@ class PartidosFromDateDTO {
         this.eVisitName,
         this.resultadoLocal,
         this.resultadoVisitante,
-        this.suspendido
+        this.suspendido,
+        this.iniciado,
+        this.finalizado,
+        this.motivo
       });
 
   PartidosFromDateDTO.fromJson(Map<String, dynamic> json) {
@@ -333,7 +386,10 @@ class PartidosFromDateDTO {
     eVisitName = json['e_visit_name'];
     resultadoLocal = json['resultado_local'];
     resultadoVisitante = json['resultado_visitante'];
-    //suspendido = json['suspendido'];
+    suspendido = json['suspendido'];
+    iniciado = json['iniciado'];
+    finalizado = json['finalizado'];
+    motivo = json['motivo'];
   }
 
   Map<String, dynamic> toJson() {
@@ -347,6 +403,56 @@ class PartidosFromDateDTO {
     data['resultado_local'] = this.resultadoLocal;
     data['resultado_visitante'] = this.resultadoVisitante;
     data['suspendido'] = this.suspendido;
+    return data;
+  }
+}
+
+class PartidoResultDTO{
+  int idPartidos;
+  int resultadoLocal;
+  String goleadoresLocal;
+  String sancionAmarillosLocal;
+  String sancionRojosLocal;
+  int resultadoVisitante;
+  String goleadoresVisitante;
+  String sancionAmarillosVisitante;
+  String sancionRojosVisitante;
+  bool iniciado;
+  bool finalizado;
+  bool suspendido;
+  String motivo;
+
+  PartidoResultDTO({
+    this.idPartidos,
+    this.resultadoLocal,
+    this.goleadoresLocal,
+    this.sancionAmarillosLocal,
+    this.sancionRojosLocal,
+    this.resultadoVisitante,
+    this.goleadoresVisitante,
+    this.sancionAmarillosVisitante,
+    this.sancionRojosVisitante,
+    this.iniciado,
+    this.finalizado,
+    this.suspendido,
+    this.motivo
+  });
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id_partidos'] = this.idPartidos;
+    data['resultado_local'] = this.resultadoLocal;
+    data['goleadores_local'] = this.goleadoresLocal;
+    data['sancion_amarillos_local'] = this.sancionAmarillosLocal;
+    data['sancion_rojos_local'] = this.sancionRojosLocal;
+    data['resultado_visitante'] = this.resultadoVisitante;
+    data['goleadores_visitante'] = this.goleadoresVisitante;
+    data['sancion_amarillos_visitantes'] = this.sancionAmarillosVisitante;
+    data['sancion_rojos_visitantes'] = this.sancionRojosVisitante;
+    data['iniciado'] = this.iniciado;
+    data['finalizado'] = this.finalizado;
+    data['suspendido'] = this.suspendido;
+    data['motivo'] = this.motivo;
     return data;
   }
 }

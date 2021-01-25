@@ -1,6 +1,7 @@
 import 'package:ag/providers/appGruposProvider.dart';
 import 'package:ag/providers/notificacionesProvider.dart';
 import 'package:ag/network/model/dtos.dart';
+import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/fieldComboBox.dart';
 import 'package:ag/view/component/fieldText.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,71 +16,62 @@ class NotificationMessages extends StatefulWidget {
 }
 
 class NotificationMessagesState extends State<NotificationMessages> {
-  List<NotificacionDTO> notificaciones;
+
   List<AppGruposDTO> appGrupos;
   @override
   void initState() {
     super.initState();
-  }
-
-  loadNotificaciones() async{
-    Provider.of<NotificacionesProvider>(context).getAll().then((value) => notificaciones = value);
-    Provider.of<AppGruposProvider>(context).getAll().then((value) => appGrupos = value);
-    for(AppGruposDTO appGruposDTO in appGrupos){
-      for(NotificacionDTO notificacionDTO in notificaciones){
-        if(appGruposDTO.idAppGrupos == notificacionDTO.idGrupo){
-          notificacionDTO.appGruposDTO = appGruposDTO;
-          continue;
-        }
-      }
-    }
-    print(notificaciones);
+    Future.microtask(() => context.read<NotificacionesProvider>().getAll());
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-        future: loadNotificaciones(),
-        builder: (BuildContext context, AsyncSnapshot<void>  snapshot) {
-          Widget list = Container(
-            child: Text("Cargando"),
-          );
-
-          if(notificaciones != null && notificaciones.isNotEmpty){
-            if(notificaciones.isNotEmpty){
-              list= ListView.separated(
-                padding: const EdgeInsets.all(8),
-                itemCount: notificaciones.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Center(child: Text('${notificaciones[index].titulo}')),
-                    subtitle: Center(child: Text('${notificaciones[index].appGruposDTO.descripcion}')),
-                    onTap: () => editEntity(context, notificaciones[index]),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) => const Divider(),
-              );
-            } else {
-              list = Container(
-                child: Text("No se encontraron Datos"),
-              );
-            }
-          }
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Notificaciones'),
-            ),
-            body: list,
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                newEntity(context);
+    return Consumer<NotificacionesProvider>(builder: (context, value, child) {
+      Widget list;
+      if(value.isLoading){
+        list =  CircularProgress();
+      } else {
+        List<NotificacionDTO> notificaciones = value.notificaciones;
+        if (notificaciones != null && notificaciones.isNotEmpty) {
+          if (notificaciones.isNotEmpty) {
+            list = ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: notificaciones.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Center(child: Text('${notificaciones[index].titulo}')),
+                  subtitle: Center(
+                      child: Text('${notificaciones[index].texto}')),
+                  //onTap: () => editEntity(context, notificaciones[index]),
+                );
               },
-              child: Icon(Icons.add),
-              backgroundColor: Colors.lightBlueAccent,
-            ),
-          );
-        });
+              separatorBuilder: (BuildContext context,
+                  int index) => const Divider(),
+            );
+          } else {
+            list = Container(
+              child: Text("No se encontraron Datos"),
+            );
+          }
+        }
+      }
+
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Notificaciones'),
+        ),
+        body: list,
+        /*
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            newEntity(context);
+          },
+          child: Icon(Icons.add),
+          backgroundColor: Colors.lightBlueAccent,
+        ),
+         */
+      );
+    },);
   }
 
   editEntity(final BuildContext context, NotificacionDTO notificacionDTO){

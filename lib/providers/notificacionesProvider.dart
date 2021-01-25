@@ -7,20 +7,24 @@ import 'package:flutter/cupertino.dart';
 
 const String endPoint = "/notificaciones";
 class NotificacionesProvider extends API with ChangeNotifier  {
+  bool isLoading;
+  List<NotificacionDTO> notificaciones;
 
-  Future<List<NotificacionDTO>> getAll() async{
+  getAll() async{
+    this.isLoading = true;
+    notifyListeners();
     try{
       final response = await super.getHttp(endPoint);
       try{
         // Si el servidor devuelve una repuesta OK, parseamos el JSON
-        return (json.decode(response.body) as List).map((i) => NotificacionDTO.fromJson(i)).toList();
+        this.notificaciones = (json.decode(response.body) as List).map((i) => NotificacionDTO.fromJson(i)).toList();
+        this.isLoading = false;
+        notifyListeners();
       } on Exception catch(e){
         print(e);
-        return null;
       }
     } on Exception catch(e) {
       print(e);
-      return null;
     }
   }
 

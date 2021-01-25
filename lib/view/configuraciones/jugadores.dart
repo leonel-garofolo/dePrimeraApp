@@ -222,18 +222,21 @@ class JugadoresFormState extends State<JugadoresForm>{
   ProvinciaDTO provinciaValue;
   EquipoDTO equipoValue;
 
-  final apellidoNombre = TextEditingController();
+  final nombre = TextEditingController();
+  final apellido = TextEditingController();
   final domicilio = TextEditingController();
   final edad = TextEditingController();
   final idLiga = TextEditingController();
   final idLocalidad = TextEditingController();
   final idTipoDoc = TextEditingController();
   final nroDoc = TextEditingController();
+  final nroCamiseta = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     if(this.widget.jugadorDTO != null){
-      apellidoNombre.text = this.widget.jugadorDTO.personaDTO.nombre;
+      nombre.text = this.widget.jugadorDTO.personaDTO.nombre;
+      apellido.text = this.widget.jugadorDTO.personaDTO.apellido;
       domicilio.text = this.widget.jugadorDTO.personaDTO.domicilio;
       edad.text = this.widget.jugadorDTO.personaDTO.edad.toString();
       idLocalidad.text = this.widget.jugadorDTO.personaDTO.localidad;
@@ -246,13 +249,14 @@ class JugadoresFormState extends State<JugadoresForm>{
       nroDoc.text = this.widget.jugadorDTO.personaDTO.nroDoc.toString();
       if(equipoValue == null)
         equipoValue = this.widget.jugadorDTO.equipoDTO;
-
+      if(this.widget.jugadorDTO.nroCamiseta != null)
+        nroCamiseta.text= this.widget.jugadorDTO.nroCamiseta.toString();
     }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.nombre : "Nuevo Arbitro"}"),
+        title: Text("${this.widget.jugadorDTO != null? this.widget.jugadorDTO.personaDTO.nombre : "Nuevo Jugador"}"),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -262,8 +266,12 @@ class JugadoresFormState extends State<JugadoresForm>{
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               FieldText(
-                label: "Apellido y Nombre",
-                controller: apellidoNombre,
+                label: "Nombre",
+                controller: nombre,
+              ),
+              FieldText(
+                label: "Apellido",
+                controller: apellido,
               ),
               FieldComboBox<PaisDTO>(
                 label: "Pais",
@@ -303,6 +311,10 @@ class JugadoresFormState extends State<JugadoresForm>{
                 itemList: widget.equiposDTO,
                 onChange: onChangeEquipo,
               ),
+              FieldNumber(
+                label: "Numero Camiseta",
+                controller: nroCamiseta,
+              ),
               Container(height: 10,),
               ButtonRequest(
                   text: "Guardar",
@@ -337,7 +349,8 @@ class JugadoresFormState extends State<JugadoresForm>{
   save() async{
     final JugadorDTO jugadorDTO = new JugadorDTO();
     final PersonaDTO personaDTO = new PersonaDTO(
-        nombre: apellidoNombre.text,
+        nombre: nombre.text,
+        apellido: apellido.text,
         idTipoDoc: int.parse(idTipoDoc.text),
         nroDoc: int.parse(nroDoc.text),
         domicilio: domicilio.text,
@@ -359,6 +372,7 @@ class JugadoresFormState extends State<JugadoresForm>{
     Provider.of<PersonasProvider>(context, listen: false).save(personaDTO).then((value){
       jugadorDTO.idPersona = int.parse(value);
       jugadorDTO.idEquipo = equipoValue.idEquipo;
+      jugadorDTO.nroCamiseta = int.parse(nroCamiseta.text);
       Provider.of<JugadoresProvider>(context, listen: false).save(jugadorDTO).then((value) {
         print(value);
         Provider.of<JugadoresProvider>(context, listen: false).getAll();

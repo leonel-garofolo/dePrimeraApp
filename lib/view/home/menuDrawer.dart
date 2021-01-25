@@ -99,7 +99,6 @@ class MenuDrawer extends StatelessWidget {
           alignment: Alignment(-1.2, 0),
         ),
         onTap: () =>{
-          //openPath(context, "DAILY", null)
           openPath(context, "DAILY", null)
         },
       ));

@@ -1,17 +1,21 @@
+import 'package:ag/network/model/dtos.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class CardGame extends StatelessWidget{
   final String escudoImage = 'assets/images/escudo.png';
 
-  CardGame({this.championName, this.date, this.localName, this.localGoal, this.visitName, this.visitGoal});
+  CardGame({this.partidoId, this.partidosFromDateDTO, this.championName, this.date, this.localName, this.localGoal, this.visitName, this.visitGoal, this.edit});
 
+  final int partidoId;
+  final PartidosFromDateDTO partidosFromDateDTO;
   final String championName;
   final DateTime date;
   final String localName;
   final String localGoal;
   final String visitName;
   final String visitGoal;
+  final Function edit;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,6 @@ class CardGame extends StatelessWidget{
     return Center(
       child: Card(
         elevation: 5,
-
         margin: EdgeInsets.all(10.0),
         borderOnForeground: true,
         child: Column(
@@ -35,8 +38,14 @@ class CardGame extends StatelessWidget{
                     ),
                 ),
                 child: new ListTile (
-                    title: Text(championName,  overflow: TextOverflow.ellipsis, )
-                )
+                    title: Text(championName,  overflow: TextOverflow.ellipsis,),
+                    trailing: InkWell(
+                      child: Icon(Icons.more_vert),
+                      onTap: () =>{
+                        edit(context, this.partidosFromDateDTO)
+                      },
+                    ),
+                ),
             ),
             SizedBox(height: 10),
             Row(

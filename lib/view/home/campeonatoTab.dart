@@ -2,6 +2,7 @@
 import 'package:ag/network/model/dtos.dart';
 import 'package:ag/providers/campeonatosProvider.dart';
 import 'package:ag/view/component/cardGame.dart';
+import 'package:ag/view/home/encuentros/editPartidos.dart';
 import 'package:ag/view/home/tabCustom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,17 @@ class CampeonatoTabState extends State<CampeonatoTab>{
     tabs.add(new Tab(text: "Fixture",));
     tabs.add(new Tab(text: "Posiciones",));
     tabs.add(new Tab(text: "Sanciones",));
+    tabs.add(new Tab(text: "Goleadores",));
+    initLoad();
+  }
 
+  initLoad(){
     Future.microtask(() {
       CampeonatosProvider provider =context.read<CampeonatosProvider>();
       provider.getFixture(this.widget.campeonatoSelected);
       provider.getTablePosition(this.widget.campeonatoSelected);
       provider.getTableSanciones(this.widget.campeonatoSelected);
+      provider.getTableGoleadores(this.widget.campeonatoSelected);
     });
   }
 
@@ -64,12 +70,15 @@ class CampeonatoTabState extends State<CampeonatoTab>{
               itemCount: partidos.length,
               itemBuilder: (BuildContext ctxt, int index) {
                 return CardGame(
+                  partidoId: partidos[index].idPartidos,
+                  partidosFromDateDTO: partidos[index],
                   championName: partidos[index].campeonatoName,
                   date: DateTime.now(),
                   localName: partidos[index].eLocalName,
                   localGoal:  partidos[index].resultadoLocal.toString(),
                   visitName:  partidos[index].eVisitName,
                   visitGoal: partidos[index].resultadoVisitante.toString(),
+                  edit: openEditPartidos,
                 );
               }
           );
@@ -103,7 +112,7 @@ class CampeonatoTabState extends State<CampeonatoTab>{
           });
 
           widget= SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
+            scrollDirection: Axis.vertical,
             child: DataTable(
                 columnSpacing: 30.0,
                 columns: const <DataColumn>[
@@ -236,7 +245,85 @@ class CampeonatoTabState extends State<CampeonatoTab>{
           );
         }
         break;
+      case 3:
+        final List<CampeonatosGoleadoresDTO> goleadores = Provider.of<CampeonatosProvider>(context, listen: false).getGoleadores();
+        if(goleadores != null && goleadores.isNotEmpty){
+          List<DataRow> dataRows = new List<DataRow>();
+          goleadores.forEach((goleador) {
+            List<DataCell> dataCells = new List<DataCell>();
+            dataCells.add(new DataCell(
+                Container(
+                    width: 130, //SET width
+                    child: Text(goleador.apellido + " " + goleador.nombre)
+                )
+            )
+            );
+
+            dataCells.add(new DataCell(
+                Container(
+                    width: 130, //SET width
+                    child: Text(goleador.equipo)
+                )
+            )
+            );
+
+            dataCells.add(new DataCell(
+                Container(//SET width
+                    child: Text(goleador.goles.toString())
+                )
+
+            )
+            );
+
+            dataRows.add(new DataRow(cells: dataCells));
+          });
+
+          widget= SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+                columnSpacing: 5.0,
+                columns: const <DataColumn>[
+                  DataColumn(
+                    numeric: false,
+                    label: Text(
+                      'Nombre',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  DataColumn(
+                    numeric: false,
+                    label: Text(
+                      'Equipo',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  DataColumn(
+                    numeric: true,
+                    label: Text(
+                      'Goles',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ],
+                rows: dataRows
+            ),
+          );
+        } else {
+          widget= Center(
+            child: Text("No se encontraron datos"),
+          );
+        }
+        break;
     }
     return widget;
+  }
+
+  openEditPartidos(BuildContext context, PartidosFromDateDTO partidosFromDateDTO) async{
+    bool received = await Navigator.push(context, MaterialPageRoute(
+        builder: (context) => EditPartidos(partidosFromDateDTO: partidosFromDateDTO,)
+    ));
+    if(received){
+      initLoad();
+    }
   }
 }
