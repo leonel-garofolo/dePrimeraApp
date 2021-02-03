@@ -171,7 +171,9 @@ class EquipoDTO extends ItemValue{
     habilitado = json['habilitado'];
     idEquipo = json['id_equipo'];
     nombre = json['nombre'];
-    idCampeonato = json['id_campeonato'];
+    if(json['id_campeonato'] != null){
+      idCampeonato = json['id_campeonato'];
+    }
   }
 
   Map<String, dynamic> toJson() {

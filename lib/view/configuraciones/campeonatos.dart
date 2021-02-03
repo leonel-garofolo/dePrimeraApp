@@ -40,6 +40,9 @@ class CampeonatosActivityState extends State<CampeonatosActivity> {
           ligas = Provider.of<LigaProvider>(context).getLigas();
           List<CampeonatoDTO> tempCampeonatos= provider.campeonatos;
           for(CampeonatoDTO campeonato in tempCampeonatos){
+            if(ligas == null){
+              continue;
+            }
             for(LigaDTO liga in ligas){
               if(campeonato.idLiga == liga.idLiga){
                 campeonato.ligaDTO = liga;

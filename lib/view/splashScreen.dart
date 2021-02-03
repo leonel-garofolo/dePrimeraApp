@@ -1,11 +1,11 @@
 import 'dart:async';
+
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/authentication/login.dart';
 import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
