@@ -73,11 +73,12 @@ class CampeonatoTabState extends State<CampeonatoTab>{
                   partidoId: partidos[index].idPartidos,
                   partidosFromDateDTO: partidos[index],
                   championName: partidos[index].campeonatoName,
-                  date: DateTime.now(),
+                  date: DateTime.parse(partidos[index].fechaEncuentro),
                   localName: partidos[index].eLocalName,
                   localGoal:  partidos[index].resultadoLocal.toString(),
                   visitName:  partidos[index].eVisitName,
                   visitGoal: partidos[index].resultadoVisitante.toString(),
+                  showDate: true,
                   edit: openEditPartidos,
                 );
               }
@@ -322,7 +323,7 @@ class CampeonatoTabState extends State<CampeonatoTab>{
     bool received = await Navigator.push(context, MaterialPageRoute(
         builder: (context) => EditPartidos(partidosFromDateDTO: partidosFromDateDTO,)
     ));
-    if(received){
+    if(received!= null && received){
       initLoad();
     }
   }

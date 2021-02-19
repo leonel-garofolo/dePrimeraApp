@@ -5,6 +5,7 @@ import 'package:ag/providers/PersonasProvider.dart';
 import 'package:ag/providers/authenticationProvider.dart';
 import 'package:ag/providers/sharedPreferenceProvider.dart';
 import 'package:ag/view/authentication/createUser.dart';
+import 'package:ag/view/component/circularProgress.dart';
 import 'package:ag/view/component/saveButton.dart';
 import 'package:ag/view/home/home.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +25,7 @@ class _LoginState extends State<Login>{
   TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
   final email = TextEditingController();
   final clave = TextEditingController();
+  bool isLoading = false;
   
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,21 @@ class _LoginState extends State<Login>{
           border:
           OutlineInputBorder(borderRadius: BorderRadius.circular(10.0))),
     );
+
+    Widget button;
+    if(isLoading) {
+      button = new CircularProgress();
+    } else{
+      button = new ButtonRequest(
+        text: "Ingresar",
+        onPressed: (){
+          setState(() {
+            isLoading= true;
+          });
+          authenticate(context);
+        },
+      );
+    }
 
     return Scaffold(
       key:_scaffoldKey,
@@ -88,12 +105,7 @@ class _LoginState extends State<Login>{
                           SizedBox(
                             height: 70.0,
                           ),
-                          ButtonRequest(
-                              text: "Ingresar",
-                              onPressed: (){
-                                authenticate(context);
-                              }
-                          ),
+                          button,
                         ],
                       ),
                     ),
@@ -127,14 +139,18 @@ class _LoginState extends State<Login>{
         password: clave.text
     );
 
-    Provider.of<AuthenticationProvider>(context, listen: false).login(user).then((value) {
+    Provider.of<AuthenticationProvider>(ctx, listen: false).login(user).then((value) {
       final UserDTO resp = value;
       if(resp.idUser == ""){
-        Provider.of<SharedPreferencesProvider>(context).saveLogged(false);
-        final message =  SnackBar(
-          content: Text("Error"),
+        Provider.of<SharedPreferencesProvider>(ctx, listen: false).saveLogged(false);
+        _scaffoldKey.currentState.showSnackBar(
+          SnackBar(
+            content: Text('El usuario y/o contraseña es incorrecta'),
+          ),
         );
-        Scaffold.of(ctx).showSnackBar(message);
+        setState(() {
+          this.isLoading = false;
+        });
       } else {
         Provider.of<SharedPreferencesProvider>(context, listen: false).saveLogged(true);
         Provider.of<SharedPreferencesProvider>(context, listen: false).saveUserId(resp.idUser);

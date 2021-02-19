@@ -363,6 +363,12 @@ class PartidosFromDateDTO {
   bool iniciado;
   bool finalizado;
   String motivo;
+  String goleadoresLocal;
+  String goleadoresVisit;
+  String sancLocalAmar;
+  String sancLocalRojas;
+  String sancVisitAmar;
+  String sancVisitRojas;
 
   PartidosFromDateDTO(
       {this.idPartidos,
@@ -376,7 +382,13 @@ class PartidosFromDateDTO {
         this.suspendido,
         this.iniciado,
         this.finalizado,
-        this.motivo
+        this.motivo,
+        this.goleadoresLocal,
+        this.goleadoresVisit,
+        this.sancLocalAmar,
+        this.sancLocalRojas,
+        this.sancVisitAmar,
+        this.sancVisitRojas
       });
 
   PartidosFromDateDTO.fromJson(Map<String, dynamic> json) {
@@ -392,6 +404,12 @@ class PartidosFromDateDTO {
     iniciado = json['iniciado'];
     finalizado = json['finalizado'];
     motivo = json['motivo'];
+    goleadoresLocal = json['goleadores_local'];
+    goleadoresVisit = json['goleadores_visit'];
+    sancLocalAmar = json['sanc_local_amar'];
+    sancLocalRojas = json['sanc_local_rojas'];
+    sancVisitAmar = json['sanc_visit_amar'];
+    sancVisitRojas = json['sanc_visit_rojas'];
   }
 
   Map<String, dynamic> toJson() {
@@ -405,6 +423,15 @@ class PartidosFromDateDTO {
     data['resultado_local'] = this.resultadoLocal;
     data['resultado_visitante'] = this.resultadoVisitante;
     data['suspendido'] = this.suspendido;
+    data['iniciado'] = this.iniciado;
+    data['finalizado'] = this.finalizado;
+    data['motivo '] = this.motivo ;
+    data['goleadores_local '] = this.goleadoresVisit ;
+    data['goleadores_visit '] = this.goleadoresVisit ;
+    data['sanc_local_amar '] = this.sancLocalAmar ;
+    data['sanc_local_rojas '] = this.sancLocalRojas ;
+    data['sanc_visit_amar '] = this.sancVisitAmar ;
+    data['sanc_visit_rojas '] = this.sancVisitRojas ;
     return data;
   }
 }

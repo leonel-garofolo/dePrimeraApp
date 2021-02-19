@@ -132,7 +132,7 @@ class MenuDrawer extends StatelessWidget {
             icon: Icon(Icons.exit_to_app),
             nombre: "Salir",
             isSubMenu: false,
-            pathGo: "EXIT"
+            pathGo: "EXIT",
         ));
 
         menus.forEach((menu) {
@@ -170,7 +170,8 @@ class MenuDrawer extends StatelessWidget {
       return Drawer(
         child: CustomScrollView(
           slivers: [
-            SliverList(delegate: SliverChildBuilderDelegate(
+            SliverList(
+                delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
                 return items[index];
               },

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 class CardGame extends StatelessWidget{
   final String escudoImage = 'assets/images/escudo.png';
 
-  CardGame({this.partidoId, this.partidosFromDateDTO, this.championName, this.date, this.localName, this.localGoal, this.visitName, this.visitGoal, this.edit});
+  CardGame({this.partidoId, this.partidosFromDateDTO, this.championName, this.date, this.localName, this.localGoal, this.visitName, this.visitGoal, this.showDate, this.edit});
 
   final int partidoId;
   final PartidosFromDateDTO partidosFromDateDTO;
@@ -15,12 +15,13 @@ class CardGame extends StatelessWidget{
   final String localGoal;
   final String visitName;
   final String visitGoal;
+  final bool showDate;
   final Function edit;
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = new DateFormat("HH:mm");
-    final String sDate = dateFormat.format(date).toString();
+    final String sFechaDate = this.showDate? new DateFormat("MM/dd").format(date).toString():"";
+    final String sHoraDate = new DateFormat("HH:mm").format(date).toString();
 
     return Center(
       child: Card(
@@ -79,7 +80,8 @@ class CardGame extends StatelessWidget{
                   width: MediaQuery.of(context).size.width * 0.15,
                   child: Column(
                     children: <Widget>[
-                      Text(sDate + ' hs'),
+                      Text(sFechaDate),
+                      Text(sHoraDate + ' hs'),
                       Text(localGoal + ' - ' + visitGoal, style: TextStyle(fontSize: 20),)
                     ],
                   ),

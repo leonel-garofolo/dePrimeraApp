@@ -29,7 +29,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home>{
-  GlobalKey<ScaffoldState> _scaffoldKey;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   /* Show Mode
    * 0 = Encuentros
@@ -44,7 +44,6 @@ class _HomeState extends State<Home>{
   @override
   void initState() {
     super.initState();
-    this._scaffoldKey = new GlobalKey<ScaffoldState>();
     this.screenType= 0;
     this.title = "Encuentros";
     Provider.of<SharedPreferencesProvider>(context, listen: false).getSharedPreference();
@@ -181,8 +180,8 @@ class _HomeState extends State<Home>{
         Provider.of<AuthenticationProvider>(context, listen: false).logout(dto).then((value) {
            sh.setBool(SH_IS_LOGGED, false);
             Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Login()),
+              _scaffoldKey.currentContext,
+              MaterialPageRoute(builder: (context) => Login()),
           );
         });
         break;

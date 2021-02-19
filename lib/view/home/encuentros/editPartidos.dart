@@ -37,8 +37,19 @@ class EditPartidosState extends State<EditPartidos>{
 
   @override
   Widget build(BuildContext context) {
+    //status equipo local
     golesLocal.text = this.widget.partidosFromDateDTO.resultadoLocal.toString();
+    goleadoresLocal.text = this.widget.partidosFromDateDTO.goleadoresLocal.toString();
+    amarillasLocal.text = this.widget.partidosFromDateDTO.sancLocalAmar.toString();
+    rojasLocal.text = this.widget.partidosFromDateDTO.sancLocalRojas.toString();
+
+    //status equipo visitante
     golesVisitante.text = this.widget.partidosFromDateDTO.resultadoVisitante.toString();
+    goleadoresVisitante.text = this.widget.partidosFromDateDTO.goleadoresVisit.toString();
+    amarillasVisitante.text = this.widget.partidosFromDateDTO.sancVisitAmar.toString();
+    rojasLocal.text = this.widget.partidosFromDateDTO.sancLocalRojas.toString();
+
+    //status partidos
     partidoIniciado = this.widget.partidosFromDateDTO.iniciado;
     partidoFinalizado = this.widget.partidosFromDateDTO.finalizado;
     partidoSuspendido= this.widget.partidosFromDateDTO.suspendido;
